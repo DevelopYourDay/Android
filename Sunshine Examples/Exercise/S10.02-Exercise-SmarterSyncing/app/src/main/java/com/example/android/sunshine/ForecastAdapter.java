@@ -78,13 +78,9 @@ class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.ForecastAdapt
      */
     @Override
     public ForecastAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-
-        View view = LayoutInflater
-                .from(mContext)
+        View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.forecast_list_item, viewGroup, false);
-
         view.setFocusable(true);
-
         return new ForecastAdapterViewHolder(view);
     }
 
