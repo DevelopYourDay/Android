@@ -183,6 +183,19 @@ public final class SunshinePreferences {
         return lastNotificationTime;
     }
 
+    public static boolean areNotificationsEnabled(Context context){
+        String displayNotificationsKey = context.getString(R.string.pref_enable_notifications_key);
+
+        boolean displayNotificationsKeyDefault = context.getResources()
+                .getBoolean(R.bool.show_notifications_by_default);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+
+        boolean shouldDisplayNotification = sp.getBoolean(displayNotificationsKey,displayNotificationsKeyDefault);
+
+        return shouldDisplayNotification;
+    }
+
     /**
      * Returns the elapsed time in milliseconds since the last notification was shown. This is used
      * as part of our check to see if we should show another notification when the weather is
@@ -212,4 +225,6 @@ public final class SunshinePreferences {
         editor.putLong(lastNotificationKey, timeOfNotification);
         editor.apply();
     }
+
+
 }

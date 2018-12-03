@@ -194,7 +194,6 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
 
-
         switch (loaderId) {
 
             case ID_FORECAST_LOADER:

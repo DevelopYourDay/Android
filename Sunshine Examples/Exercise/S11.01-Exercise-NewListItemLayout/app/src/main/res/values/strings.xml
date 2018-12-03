@@ -244,4 +244,12 @@
         Low:<xliff:g id="low">%3$s</xliff:g>
     </string>
 
+
+    <!-- Used To Text UserInterfaces -->
+
+    <string name="teste_forecast_list_item_Date">Today, December 5</string>
+    <string name="teste_forecast_list_item_Tempo">Light Rain</string>
+    <string name="teste_forecast_list_item_Temp_Max">18º</string>
+    <string name="teste_forecast_list_item_Temp_Min">13º</string>
+
 </resources>

@@ -86,6 +86,18 @@ public final class SunshineWeatherUtils {
         return highLowStr;
     }
 
+    public static String formatHight(Context context, double high){
+        long roundedHigh = Math.round(high);
+        String formattedHigh = formatTemperature(context, roundedHigh);
+        return formattedHigh;
+    }
+
+    public static String formatLow(Context context, double low){
+        long roundedLow = Math.round(low);
+        String formattedLow = formatTemperature(context, roundedLow);
+        return formattedLow;
+    }
+
     /**
      * This method uses the wind direction in degrees to determine compass direction as a
      * String. (eg NW) The method will return the wind String in the following form: "2 km/h SW"

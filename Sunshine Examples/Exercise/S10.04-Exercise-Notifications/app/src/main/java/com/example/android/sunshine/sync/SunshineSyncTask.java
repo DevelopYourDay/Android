@@ -18,12 +18,19 @@ package com.example.android.sunshine.sync;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.text.format.DateUtils;
 
+import com.example.android.sunshine.data.SunshinePreferences;
 import com.example.android.sunshine.data.WeatherContract;
 import com.example.android.sunshine.utilities.NetworkUtils;
+import com.example.android.sunshine.utilities.NotificationUtils;
 import com.example.android.sunshine.utilities.OpenWeatherJsonUtils;
 
 import java.net.URL;
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
 
 public class SunshineSyncTask {
 
@@ -74,10 +81,19 @@ public class SunshineSyncTask {
                         weatherValues);
 
 //              TODO (13) Check if notifications are enabled
+                boolean notificationsEnable = SunshinePreferences.areNotificationsEnabled(context);
+                boolean oneDayPassedSinceLastNotification = false;
+                long timeSinceLastNotification  = SunshinePreferences.getEllapsedTimeSinceLastNotification(context);
 
 //              TODO (14) Check if a day has passed since the last notification
+                if(timeSinceLastNotification >= DateUtils.DAY_IN_MILLIS){
+                    oneDayPassedSinceLastNotification = true;
+                }
 
 //              TODO (15) If more than a day have passed and notifications are enabled, notify the user
+                if(notificationsEnable && oneDayPassedSinceLastNotification){
+                    NotificationUtils.notifyUserOfNewWeather(context);
+                }
 
             /* If the code reaches this point, we have successfully performed our sync */
 
