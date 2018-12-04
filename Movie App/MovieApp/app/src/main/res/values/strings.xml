@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">MovieApp</string>
+    <string name="app_name">Pop Movies</string>
+    <string name="label_name_details_movie"> MovieDetail</string>
 
-    <string name="content_description_cover_serie">Name Serie</string>
-    <string name="content_description_add_serie_favorite">Add serie favorite</string>
+
+    <string name="content_description_cover_movie">Name Serie</string>
 </resources>

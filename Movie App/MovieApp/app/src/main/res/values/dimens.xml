@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="size_title_movie">45sp</dimen>
+    <dimen name="size_movie_year">25sp</dimen>
+    <dimen name="size_movie_duration">20sp</dimen>
+    <dimen name="size_movie_rating">8sp</dimen>
+    <dimen name="size_movie_description">10sp</dimen>
+    <dimen name="size_txt_bt_mark_favorite">6sp</dimen>
+
+</resources>
