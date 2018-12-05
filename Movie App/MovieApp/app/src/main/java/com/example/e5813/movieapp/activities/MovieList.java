@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesAdapterOnClickHandler{
 
-    private static final String PARCEL_MOVIE = "PARCEL_MOVIE";
+    public static final String PARCEL_MOVIE_ID = "PARCEL_MOVIE_ID";
     private RecyclerView mRecyclerView;
     private ProgressBar mLoadingIndicator;
     private MovieAdapter mMovieAdapter;
@@ -83,7 +83,8 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
     @Override
     public void onClick(int id) {
         Intent movieDetailIntent = new Intent(MovieList.this,MovieDetails.class);
-      //  movieDetailIntent.putExtra(PARCEL_MOVIE, );
+        Movie movie = mMovieAdapter.getMovieFromList(id);
+         movieDetailIntent.putExtra(PARCEL_MOVIE_ID, movie.getId());
         startActivity(movieDetailIntent);
     }
 }

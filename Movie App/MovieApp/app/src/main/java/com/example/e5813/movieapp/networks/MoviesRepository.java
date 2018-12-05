@@ -15,7 +15,7 @@ public class MoviesRepository {
 
     final static String LANGUAGE = "en-US";
 
-    final static String API_KEY = "<apikey>";
+    final static String API_KEY = "b7ecf52683a89db9aedbdc0ff9f31f25";
 
     public static void getMovies(TmdbApiService api, final OnGetMoviesCallback callback) {
         api.listPopularMovies(API_KEY, LANGUAGE).enqueue(new Callback<MoviesResponse>() {
@@ -41,8 +41,8 @@ public class MoviesRepository {
     }
 
 
-    public static void getMoviesDetails(TmdbApiService api, int id, final OnGetMovieDetails callback) {
-        api.movieDetails(API_KEY, LANGUAGE, id).enqueue(new Callback<MovieDetails>() {
+    public static void getMoviesDetails(TmdbApiService api, int movie_id, final OnGetMovieDetails callback) {
+        api.movieDetails(movie_id,API_KEY, LANGUAGE).enqueue(new Callback<MovieDetails>() {
             @Override
             public void onResponse(@NonNull Call<MovieDetails> call, @NonNull Response<MovieDetails> response) {
                 if (response.isSuccessful()) {

@@ -31,6 +31,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapterViewHolder> {
         this.mMovieList = seriesList;
     }
 
+    /**
+     * Usado quando um novo ViewHolder é Criado.
+     * @param viewGroup O ViewGroup no qual esses ViewHolders estão contidos.
+     * @param viewType usado caso o nosso recyclerView tenha mais que um tipo. Neste caso nao faz diferença so temos um
+     *                 tipo de viewType
+     * @return
+     */
     @NonNull
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
@@ -40,17 +47,41 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapterViewHolder> {
         return new MovieAdapterViewHolder(view, mClickHandler);
     }
 
+    /**
+     * Chamado pelo RecyclerView para exibir os dados na posicao.
+     * é usado o ViewHolder para exibir o Cover do Filme
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull MovieAdapterViewHolder holder, int position) {
         Movie movie = mMovieList.get(position);
         Picasso.get().load(MovieUtils.getFullUrlImage(movie.getUrlImage())).into(holder.movieCoverImage);
     }
 
+    /**
+     * Devolve o numero de itens a serem exibidos.
+     * Usado em background para ajudar a organizar as visualizações e animações.
+     * @return
+     */
     @Override
     public int getItemCount() {
         if(null == mMovieList) return 0;
         return mMovieList.size();
     }
+
+    /**
+     * Devolve um filme
+     * @param position
+     * @return
+     */
+    public Movie getMovieFromList(int position){
+        if(position >= 0){
+            return mMovieList.get(position);
+        }
+        return null;
+    }
+
 
 
 

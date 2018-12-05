@@ -17,9 +17,9 @@ public interface TmdbApiService {
                                            @Query ("language") String language);
 
     @GET("movie/{movie_id}")
-    Call<MovieDetails> movieDetails(@Query("api_key") String apiKey,
-                                    @Query ("language") String language,
-                                    @Path("movie_id") int movieId);
+    Call<MovieDetails> movieDetails(@Path("movie_id") int movie_id,
+                                    @Query("api_key") String apiKey,
+                                    @Query ("language") String language);
 
     @GET("movie/top_rated")
     Call<MoviesResponse> listTopRated(@Query("api_key") String apiKey,

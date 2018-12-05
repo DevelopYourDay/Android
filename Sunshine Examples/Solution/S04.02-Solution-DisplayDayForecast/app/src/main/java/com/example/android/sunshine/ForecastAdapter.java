@@ -57,27 +57,7 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     /**
      * Cache of the children views for a forecast list item.
      */
-    public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
-        public final TextView mWeatherTextView;
 
-        public ForecastAdapterViewHolder(View view) {
-            super(view);
-            mWeatherTextView = (TextView) view.findViewById(R.id.tv_weather_data);
-            view.setOnClickListener(this);
-        }
-
-        /**
-         * This gets called by the child views during a click.
-         *
-         * @param v The View that was clicked
-         */
-        @Override
-        public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            String weatherForDay = mWeatherData[adapterPosition];
-            mClickHandler.onClick(weatherForDay);
-        }
-    }
 
     /**
      * This gets called when each new ViewHolder is created. This happens when the RecyclerView
@@ -139,5 +119,27 @@ public class ForecastAdapter extends RecyclerView.Adapter<ForecastAdapter.Foreca
     public void setWeatherData(String[] weatherData) {
         mWeatherData = weatherData;
         notifyDataSetChanged();
+    }
+
+    public class ForecastAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+        public final TextView mWeatherTextView;
+
+        public ForecastAdapterViewHolder(View view) {
+            super(view);
+            mWeatherTextView = (TextView) view.findViewById(R.id.tv_weather_data);
+            view.setOnClickListener(this);
+        }
+
+        /**
+         * This gets called by the child views during a click.
+         *
+         * @param v The View that was clicked
+         */
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            String weatherForDay = mWeatherData[adapterPosition];
+            mClickHandler.onClick(weatherForDay);
+        }
     }
 }

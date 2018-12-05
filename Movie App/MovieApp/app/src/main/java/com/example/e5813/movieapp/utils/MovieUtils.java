@@ -25,10 +25,24 @@ public class MovieUtils {
     }
 
 
-    public String getRuntimeInMinutes(String runtime){
-        if(runtime != null){
-            String runtimeFinal = runtime + "min";
+    public static String getDurationInMinutes(String duration){
+        if(duration != null){
+            String runtimeFinal = duration + "min";
             return runtimeFinal;
+        }
+        return null;
+    }
+
+    /**
+     *  extract Year form date. o formato da date tem de ser YYYY-MM-DD
+     * @param date format example 2018-10-03
+     * @return 2018
+     */
+    public static String getYearFromDate(String date){
+        if(date != null){
+            String[] str = date.split("-");
+            if(str[0].matches("\\d{4}"))
+                return str[0];
         }
         return null;
     }

@@ -16,7 +16,11 @@ public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements V
 final ImageView movieCoverImage;
 final private MovieAdapter.MoviesAdapterOnClickHandler mClickHandler;
 
-
+    /**
+     *Um ViewHolder descreve uma visão de item e metadados sobre seu lugar dentro do RecyclerView.
+     * @param itemView
+     * @param handler
+     */
     public MovieAdapterViewHolder(@NonNull View itemView, MovieAdapter.MoviesAdapterOnClickHandler handler) {
         super(itemView);
         mClickHandler = handler;
@@ -24,10 +28,16 @@ final private MovieAdapter.MoviesAdapterOnClickHandler mClickHandler;
         itemView.setOnClickListener(this);
     }
 
+    /**
+     * Usado pelas childs views durante o click
+     * @param v
+     */
 
     @Override
     public void onClick(View v) {
         int adatpterPosition = getAdapterPosition();
-        mClickHandler.onClick(v.getId()); // necessario alterar aqui
+        mClickHandler.onClick(adatpterPosition );
+
+
     }
 }
