@@ -15,7 +15,7 @@ public class MoviesRepository {
 
     final static String LANGUAGE = "en-US";
 
-    final static String API_KEY = "b7ecf52683a89db9aedbdc0ff9f31f25";
+    final static String API_KEY = "<api_key>";
 
     public static void getMovies(TmdbApiService api, final OnGetMoviesCallback callback) {
         api.listPopularMovies(API_KEY, LANGUAGE).enqueue(new Callback<MoviesResponse>() {
