@@ -1,15 +1,11 @@
-package com.example.e5813.movieapp.activities;
+package com.example.e5813.movieapp.views.adapter;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.e5813.movieapp.R;
-
-import org.w3c.dom.Text;
 
 public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 

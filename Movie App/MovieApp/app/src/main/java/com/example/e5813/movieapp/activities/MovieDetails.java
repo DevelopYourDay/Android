@@ -9,9 +9,9 @@ import android.widget.Toast;
 
 import com.example.e5813.movieapp.R;
 import com.example.e5813.movieapp.networks.MoviesRepository;
-import com.example.e5813.movieapp.networks.OnGetMovieDetails;
+import com.example.e5813.movieapp.networks.Interfaces.OnGetMovieDetails;
 
-import com.example.e5813.movieapp.networks.TmdbApiService;
+import com.example.e5813.movieapp.networks.Interfaces.TmdbApiService;
 import com.example.e5813.movieapp.networks.TmdbClientInstance;
 import com.example.e5813.movieapp.utils.MovieUtils;
 import com.squareup.picasso.Picasso;

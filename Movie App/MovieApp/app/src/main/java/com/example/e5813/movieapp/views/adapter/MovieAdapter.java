@@ -1,7 +1,6 @@
-package com.example.e5813.movieapp.activities;
+package com.example.e5813.movieapp.views.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

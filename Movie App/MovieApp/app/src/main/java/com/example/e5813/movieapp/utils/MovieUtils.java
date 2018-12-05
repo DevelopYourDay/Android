@@ -15,7 +15,11 @@ public class MovieUtils {
         return null;
     }
 
-
+    /**
+     *  add "/10" to rating
+     * @param rating example "6.5"
+     * @return "6.5/10"
+     */
     public static String convertRatingPercentage(String rating){
         if(rating != null){
             String finalRating = rating + "/10";
@@ -24,7 +28,11 @@ public class MovieUtils {
             return null;
     }
 
-
+    /**
+     * add "min" to duration
+     * @param duration example "112"
+     * @return "112min"
+     */
     public static String getDurationInMinutes(String duration){
         if(duration != null){
             String runtimeFinal = duration + "min";

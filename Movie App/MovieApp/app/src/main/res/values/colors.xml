@@ -19,6 +19,8 @@
 
     <color name="green_wather">#B2DFDB</color>
 
+    <color name="transparent"> #00000000</color>
+
 
 <color name="LettersListSeries">#757575</color>
     <color name="PrimaryText">#212121</color>
