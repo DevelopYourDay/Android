@@ -26,9 +26,6 @@ public class ConnectivityReceiver extends BroadcastReceiver {
     }
 
 
-
-
-
     public static boolean isConnected() {
         ConnectivityManager
                 cm = (ConnectivityManager) MyApplication.getInstance().getApplicationContext()

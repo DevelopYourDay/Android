@@ -19,16 +19,16 @@ public class MoviesRepository {
 
     final static String LANGUAGE = "en-US";
 
-    final static String API_KEY = "b7ecf52683a89db9aedbdc0ff9f31f25";
+    //final static String API_KEY = "b7ecf52683a89db9aedbdc0ff9f31f25";
 
-    public static void getMovies(TmdbApiService api, final OnGetMoviesCallback callback) {
-        api.listPopularMovies(API_KEY, LANGUAGE).enqueue(new Callback<MoviesResponse>() {
+    public  static void getMovies(TmdbApiService api,int page, final OnGetMoviesCallback callback) {
+        api.listPopularMovies(API_KEY, LANGUAGE,page).enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
                 if (response.isSuccessful()) {
                     MoviesResponse moviesResponse = response.body();
                     if (moviesResponse != null && moviesResponse.getMovies() != null) {
-                        callback.onSuccess(moviesResponse.getMovies());
+                        callback.onSuccess(moviesResponse.getPage(),moviesResponse.getMovies());
                     } else {
                         callback.onError();
                     }
@@ -67,14 +67,14 @@ public class MoviesRepository {
         });
     }
 
-    public static void getMoviesTopRated(TmdbApiService api, final OnGetMovieTopRated callback) {
-        api.listPopularMovies(API_KEY, LANGUAGE).enqueue(new Callback<MoviesResponse>() {
+    public static void getMoviesTopRated(TmdbApiService api,int page ,final OnGetMovieTopRated callback) {
+        api.listTopRated(API_KEY, LANGUAGE,page).enqueue(new Callback<MoviesResponse>() {
             @Override
             public void onResponse(@NonNull Call<MoviesResponse> call, @NonNull Response<MoviesResponse> response) {
                 if (response.isSuccessful()) {
                     MoviesResponse moviesResponse = response.body();
                     if (moviesResponse != null && moviesResponse.getMovies() != null) {
-                        callback.onSuccess(moviesResponse.getMovies());
+                        callback.onSuccess(moviesResponse.getPage(),moviesResponse.getMovies());
                     } else {
                         callback.onError();
                     }

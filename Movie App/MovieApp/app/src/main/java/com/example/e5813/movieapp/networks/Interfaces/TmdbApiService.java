@@ -14,7 +14,8 @@ import retrofit2.http.Query;
 public interface TmdbApiService {
     @GET("movie/popular")
     Call<MoviesResponse> listPopularMovies(@Query("api_key") String apiKey,
-                                           @Query ("language") String language);
+                                           @Query ("language") String language,
+                                            @Query("page") int page);
 
     @GET("movie/{movie_id}")
     Call<MovieDetails> movieDetails(@Path("movie_id") int movie_id,
@@ -23,5 +24,6 @@ public interface TmdbApiService {
 
     @GET("movie/top_rated")
     Call<MoviesResponse> listTopRated(@Query("api_key") String apiKey,
-                                           @Query ("language") String language);
+                                           @Query ("language") String language,
+                                             @Query("page") int page);
 }
