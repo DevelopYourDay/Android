@@ -33,7 +33,5 @@ final private MovieAdapter.MoviesAdapterOnClickHandler mClickHandler;
     public void onClick(View v) {
         int adatpterPosition = getAdapterPosition();
         mClickHandler.onClick(adatpterPosition );
-
-
     }
 }

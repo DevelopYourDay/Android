@@ -2,6 +2,7 @@ package com.example.e5813.movieapp.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -34,6 +35,13 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
     public static final String PREFS_NAME_FILE = "MyPrefsFile";
     // default MOVIES_POPULAR
     public static final String PREFS_SORT_MOVIE = "MOVIES_POPULAR";
+
+    private static final int DEFAULT_VALUE_FROM_PAGE_REQUEST = 1;
+
+    private static final String SAVED_RECYCLER_VIEW_STATUS_ID = "SAVED_RECYCLER_VIEW_STATUS_ID";
+    private static final String SAVED_RECYCLER_VIEW_POSITION = "SAVED_RECYCLER_VIEW_ADAPTER_ID";
+
+    private Parcelable mlistState;
 
 
     public static final String PARCEL_MOVIE_ID = "PARCEL_MOVIE_ID";
@@ -68,27 +76,30 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_list);
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_list_movies);
-        mLoadingIndicator = (ProgressBar) findViewById(R.id.widget_progress_bar_list_movies);
-        mNoInternetConnection = (View) findViewById(R.id.layout_no_internet_connection);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_movie_list_refresh);
-        layoutManager = new GridLayoutManager(this, 2,GridLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setHasFixedSize(true);
-        moviesAdapterOnClickHandler =  this;
-        //mfetchMovies = new FetchMovies(this);
-        List<Movie> listMovie = new LinkedList<>();
-        mMovieAdapter = new MovieAdapter(this , moviesAdapterOnClickHandler, listMovie);
-        mRecyclerView.setAdapter(mMovieAdapter);
-        setupOnScrollListener();
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                isConnected(ConnectivityReceiver.isConnected());
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        });
+            mRecyclerView = (RecyclerView) findViewById(R.id.rv_list_movies);
+            mLoadingIndicator = (ProgressBar) findViewById(R.id.widget_progress_bar_list_movies);
+            mNoInternetConnection = (View) findViewById(R.id.layout_no_internet_connection);
+            mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_movie_list_refresh);
+            layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
+            mRecyclerView.setLayoutManager(layoutManager);
+            mRecyclerView.setHasFixedSize(true);
+            moviesAdapterOnClickHandler = this;
+            //mfetchMovies = new FetchMovies(this);
+            List<Movie> listMovie = new LinkedList<>();
+            mMovieAdapter = new MovieAdapter(this, moviesAdapterOnClickHandler, listMovie);
+            mRecyclerView.setAdapter(mMovieAdapter);
+            setupOnScrollListener();
+            isConnected(ConnectivityReceiver.isConnected());
+
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    isConnected(ConnectivityReceiver.isConnected());
+                    mSwipeRefreshLayout.setRefreshing(false);
+                }
+            });
+
     }
 
 
@@ -100,8 +111,8 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
 
     @Override
     protected void onStart() {
-        isConnected(ConnectivityReceiver.isConnected());
         super.onStart();
+       isConnected(ConnectivityReceiver.isConnected());
     }
 
     @Override
@@ -120,7 +131,6 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
             showViewNoInternetConnection();
         }
     }
-
 
 
     private void addMoviesToAdapter(String type){
@@ -193,16 +203,16 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.popular:
+                        currentPage = DEFAULT_VALUE_FROM_PAGE_REQUEST;
                         changesortMoviePReference(MOVIES_POPULAR);
                         mMovieAdapter.cleanMovies();
                         isConnected(ConnectivityReceiver.isConnected());
-                        currentPage =1;
                         return true;
                     case R.id.top_rated:
+                        currentPage = DEFAULT_VALUE_FROM_PAGE_REQUEST;
                         changesortMoviePReference(MOVIES_TOP_RATED);
                         mMovieAdapter.cleanMovies();
                         isConnected(ConnectivityReceiver.isConnected());
-                        currentPage = 1;
                         return true;
                     default:
                         return false;
@@ -225,8 +235,6 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
         String moviePref = settings.getString(PREFS_SORT_MOVIE, PREFS_SORT_MOVIE);
         return moviePref;
     }
-
-
 
     private void refreshAdapter(List<Movie> movies){
         mMovieAdapter.appendMovies(movies);
@@ -294,6 +302,29 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
                 }
             }
         });
+    }
+
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //mlistState = layoutManager.onSaveInstanceState();
+        //outState.putParcelable(SAVED_RECYCLER_VIEW_STATUS_ID, layoutManager.onSaveInstanceState());
+        int i = layoutManager.findFirstVisibleItemPosition();
+        outState.putInt(SAVED_RECYCLER_VIEW_POSITION,i);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle state) {
+        super.onRestoreInstanceState(state);
+        // Retrieve list state and list/item positions
+        if(state != null) {
+          //  mlistState = state.getParcelable(SAVED_RECYCLER_VIEW_STATUS_ID);
+            //layoutManager.onRestoreInstanceState(mlistState);
+            mRecyclerView.smoothScrollToPosition(state.getInt(SAVED_RECYCLER_VIEW_POSITION));
+            //mRecyclerView.setLayoutManager(layoutManager);
+        }
+
     }
 
 
