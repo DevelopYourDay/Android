@@ -1,10 +1,13 @@
 package com.example.e5813.movieapp.activities;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,12 +18,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.e5813.movieapp.R;
+import com.example.e5813.movieapp.data.MoviesContract;
+import com.example.e5813.movieapp.data.MoviesProvider;
 import com.example.e5813.movieapp.models.Movie;
 import com.example.e5813.movieapp.models.MovieReviews;
 import com.example.e5813.movieapp.models.MovieVideos;
@@ -34,6 +40,7 @@ import com.example.e5813.movieapp.networks.Interfaces.OnGetMovieDetails;
 import com.example.e5813.movieapp.networks.Interfaces.TmdbApiService;
 import com.example.e5813.movieapp.networks.TmdbClientInstance;
 import com.example.e5813.movieapp.utils.MovieUtils;
+import com.example.e5813.movieapp.utils.MoviesDatesUtils;
 import com.example.e5813.movieapp.views.adapter.MovieAdapter;
 import com.example.e5813.movieapp.views.adapter.MovieDetailsReviewsAdapter;
 import com.example.e5813.movieapp.views.adapter.MovieDetailsTrailerAdapter;
@@ -48,7 +55,7 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         MovieDetailsReviewsAdapter.MovieDetailsReviewsAdapterOnClickHandler {
 
     private static  final int DEFAULT_VALUE_EXTRA_ID = 1;
-    private int mIdMovie;
+    private Movie mIdMovie;
     private MovieDetails mMovieDetails;
     private View mViewMovieInformation;
     private View mViewTrailers;
@@ -61,6 +68,7 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     private TextView mDescription;
     private TextView mRating;
     private ImageView mCover;
+    private ImageView mBtAddFavorites;
 
     private RecyclerView mRecyclerViewTrailers;
     private RecyclerView mRecyclerViewsReviews;
@@ -83,7 +91,7 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         Intent IntentListMovies = getIntent();
         if (IntentListMovies != null) {
             if (IntentListMovies.hasExtra(MovieList.PARCEL_MOVIE_ID)) {
-                mIdMovie = IntentListMovies.getIntExtra(MovieList.PARCEL_MOVIE_ID,DEFAULT_VALUE_EXTRA_ID);
+                mIdMovie = (Movie)IntentListMovies.getSerializableExtra(MovieList.PARCEL_MOVIE_ID);
                 loadViews();
             }
         }
@@ -103,6 +111,9 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mDescription = (TextView) mViewMovieInformation.findViewById(R.id.tv_movie_descriptions);
         mRating = (TextView) mViewMovieInformation.findViewById(R.id.tv_movie_rating);
         mCover = (ImageView) mViewMovieInformation.findViewById(R.id.img_details_movie_cover);
+        mBtAddFavorites = (ImageView) mViewMovieInformation.findViewById(R.id.img_details_movie_mark_favorite);
+        loadBtnAddFavoritesActions(mBtAddFavorites);
+        defineIconBtnFavorite(mIdMovie.getId());
 
         mRecyclerViewTrailers = (RecyclerView) mViewTrailers.findViewById(R.id.rv_list_trailers);
         mRecyclerViewsReviews = (RecyclerView) mViewReviews.findViewById(R.id.rv_list_reviews);
@@ -137,6 +148,68 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     }
 
 
+    private void loadBtnAddFavoritesActions(final ImageView mBtnAddFavorites){
+        mBtnAddFavorites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mBtnAddFavorites.getBackground() == getResources().getDrawable(R.drawable.ic_star,null)) {
+                    //remove here
+                    mBtnAddFavorites.setBackgroundResource(R.drawable.ic_best);
+                }else{
+                    addMovieToFavoriteList();
+                    mBtnAddFavorites.setBackgroundResource(R.drawable.ic_star);
+                }
+            }
+        });
+
+    }
+
+
+    private void defineIconBtnFavorite(int idMovie){
+
+        if(MovieIsPresentInFavoriteList(idMovie)){
+            mBtAddFavorites.setBackgroundResource(R.drawable.ic_star);
+        }else{
+            mBtAddFavorites.setBackgroundResource(R.drawable.ic_best);
+        }
+
+    }
+
+    private void removeMovieFromFavoriteList(int idMovie){
+
+    }
+
+    private void addMovieToFavoriteList(){
+        Uri mNewUri;
+        ContentValues mNewValues = new ContentValues();
+        mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_MOVIE_ID, mIdMovie.getId());
+        mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_DATE, MoviesDatesUtils.normalizeDate(MoviesDatesUtils.getNormalizedUtcDateForToday()));
+        mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_DURATION, mDuration.getText().toString());
+        mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_RATING, mRating.getText().toString());
+        mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_TITLE, mTitle.getText().toString());
+        mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_URL_IMAGE, mIdMovie.getUrlImage());
+        mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_YEAR, mYear.getText().toString());
+
+        mNewUri = getContentResolver().insert(MoviesContract.MoviesFavoritesEntry.CONTENT_URI, mNewValues);
+    }
+
+    private boolean MovieIsPresentInFavoriteList(int idMovie){
+        Cursor mCursor;
+        String[] mProjection = {"*"};
+
+        String mSelectionClause = MoviesContract.MoviesFavoritesEntry.COLUMN_MOVIE_ID + " = ?";
+
+       String[]  mSelectionArgs = {Integer.toString(idMovie)};
+
+        mCursor = getContentResolver().query(MoviesContract.MoviesFavoritesEntry.buildMovieUriWithIDMovie(idMovie), mProjection,
+                mSelectionClause, mSelectionArgs, null);
+
+        if (mCursor.getCount() >= 1) {
+            return true;
+        }
+            return false;
+    }
+
     private void  getMovieDetails(int idMovie){
         TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
         MoviesRepository.getMoviesDetails(api, idMovie, new OnGetMovieDetails() {
@@ -163,7 +236,6 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     }
 
 
-
     private void getTrailers(int idMovie){
         TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
         MoviesRepository.getVideosFromMovies(api, idMovie, new OnGetVideosFromMovie() {
@@ -180,7 +252,6 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mMovieDetailsTrailerAdapter.appendMovies(movieVideos);
   }
 
-
     private void getReviews(int idMovie){
         TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
         MoviesRepository.getMoviesReviews(api, idMovie, new OnGetMovieReviews() {
@@ -194,7 +265,6 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     }
 
     private void  ReviewsToAdapter(List<MovieReviews> movieReviews){
-        mMovieDetailsReviewsAdapter.appendMovies(movieReviews);
         mMovieDetailsReviewsAdapter.appendMovies(movieReviews);
         mMovieDetailsReviewsAdapter.appendMovies(movieReviews);
     }
@@ -219,16 +289,15 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     private void isConnected(boolean isConnected){
         if(isConnected){
             hiddeViewNoInternetConnection();
-            getMovieDetails(mIdMovie);
-            getTrailers(mIdMovie);
-            getReviews(mIdMovie);
+            getMovieDetails(mIdMovie.getId());
+            getTrailers(mIdMovie.getId());
+            getReviews(mIdMovie.getId());
             showAllViews();
         }else{
             hideAllViews();
             showViewNoInternetConnection();
         }
     }
-
 
    private void hideAllViews(){
          mViewMovieInformation.setVisibility(View.INVISIBLE);

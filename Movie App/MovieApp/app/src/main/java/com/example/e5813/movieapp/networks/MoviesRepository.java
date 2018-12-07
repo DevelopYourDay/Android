@@ -26,8 +26,6 @@ public class MoviesRepository {
 
     final static String API_KEY = "b7ecf52683a89db9aedbdc0ff9f31f25";
 
-    final static String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
-
     public  static void getMovies(TmdbApiService api,int page, final OnGetMoviesCallback callback) {
         api.listPopularMovies(API_KEY, LANGUAGE,page).enqueue(new Callback<MoviesResponse>() {
             @Override
@@ -43,7 +41,6 @@ public class MoviesRepository {
                     callback.onError();
                 }
             }
-
             @Override
             public void onFailure(Call<MoviesResponse> call, Throwable t) {
                 callback.onError();
@@ -119,7 +116,6 @@ public class MoviesRepository {
             }
         });
     }
-
 
     public static void getVideosFromMovies(TmdbApiService api,int idMovie,final OnGetVideosFromMovie callback) {
         api.listVideosFromMovie(idMovie,API_KEY, LANGUAGE).enqueue(new Callback<MovieVideosResponse>() {

@@ -38,6 +38,11 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:name=".data.MoviesProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false"/>
+
     </application>
 
 </manifest>
