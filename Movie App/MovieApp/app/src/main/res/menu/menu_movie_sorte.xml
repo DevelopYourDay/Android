@@ -7,8 +7,14 @@
         android:title="Popular"
         app:showAsAction="never" />
     <item
-        android:id="@+id/top_rated"
+    android:id="@+id/top_rated"
+    android:enabled="true"
+    android:title="Top Rated"
+    app:showAsAction="never" />
+
+    <item
+        android:id="@+id/favorites"
         android:enabled="true"
-        android:title="Top Rated"
+        android:title="Favorites"
         app:showAsAction="never" />
 </menu>

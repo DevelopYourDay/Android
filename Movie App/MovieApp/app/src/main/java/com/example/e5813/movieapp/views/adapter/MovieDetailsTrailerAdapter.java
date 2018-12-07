@@ -40,7 +40,7 @@ public class MovieDetailsTrailerAdapter  extends RecyclerView.Adapter<MovieDetai
     @NonNull
     @Override
     public MovieDetailsTrailersViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        int layout = R.layout.fragment_list_trailer;
+        int layout = R.layout.movie_details_trailer_item;
         View view = LayoutInflater.from(mContext).inflate(layout,viewGroup,false);
         view.setFocusable(true);
         return new MovieDetailsTrailersViewHolder(view, mClickHandler);
@@ -78,6 +78,14 @@ public class MovieDetailsTrailerAdapter  extends RecyclerView.Adapter<MovieDetai
     public void cleanTrailers() {
         mMovieDetailsVideosList.clear();
         notifyDataSetChanged();
+    }
+
+
+    public MovieVideos getTrailerFromList(int position){
+        if(position >= 0){
+            return mMovieDetailsVideosList.get(position);
+        }
+        return null;
     }
 
 }

@@ -1,8 +1,14 @@
 package com.example.e5813.movieapp.activities;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +22,10 @@ import android.widget.Toast;
 
 import com.example.e5813.movieapp.R;
 import com.example.e5813.movieapp.models.Movie;
+import com.example.e5813.movieapp.models.MovieReviews;
 import com.example.e5813.movieapp.models.MovieVideos;
+import com.example.e5813.movieapp.networks.Interfaces.OnGetMovieReviews;
+import com.example.e5813.movieapp.networks.Interfaces.OnGetVideosFromMovie;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.ConnectivityReceiver;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.MyApplication;
 import com.example.e5813.movieapp.networks.MoviesRepository;
@@ -26,6 +35,7 @@ import com.example.e5813.movieapp.networks.Interfaces.TmdbApiService;
 import com.example.e5813.movieapp.networks.TmdbClientInstance;
 import com.example.e5813.movieapp.utils.MovieUtils;
 import com.example.e5813.movieapp.views.adapter.MovieAdapter;
+import com.example.e5813.movieapp.views.adapter.MovieDetailsReviewsAdapter;
 import com.example.e5813.movieapp.views.adapter.MovieDetailsTrailerAdapter;
 import com.example.e5813.movieapp.views.notifications.Toasts;
 import com.squareup.picasso.Picasso;
@@ -34,7 +44,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MovieDetails extends AppCompatActivity  implements ConnectivityReceiver.ConnectivityReceiverListener,
-        MovieDetailsTrailerAdapter.MovieDetailsTrailerAdapterOnClickHandler{
+        MovieDetailsTrailerAdapter.MovieDetailsTrailerAdapterOnClickHandler,
+        MovieDetailsReviewsAdapter.MovieDetailsReviewsAdapterOnClickHandler {
 
     private static  final int DEFAULT_VALUE_EXTRA_ID = 1;
     private int mIdMovie;
@@ -57,8 +68,10 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     private LinearLayoutManager mLinearLayoutManagerReviews;
 
     private MovieDetailsTrailerAdapter mMovieDetailsTrailerAdapter;
+    private MovieDetailsReviewsAdapter mMovieDetailsReviewsAdapter;
 
     private MovieDetailsTrailerAdapter.MovieDetailsTrailerAdapterOnClickHandler movieDetailsTrailerAdapterOnClickHandler;
+    private  MovieDetailsReviewsAdapter.MovieDetailsReviewsAdapterOnClickHandler movieDetailsReviewsAdapterOnClickHandler;
 
 
 
@@ -100,25 +113,31 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mRecyclerViewTrailers.setLayoutManager(mLinearLayoutManagerTrailers);
         mRecyclerViewTrailers.setHasFixedSize(true);
         movieDetailsTrailerAdapterOnClickHandler = this;
-        //mfetchMovies = new FetchMovies(this);
-        List<MovieVideos> listMovieTrailers = new LinkedList<>();
-        mMovieDetailsTrailerAdapter = new MovieDetailsTrailerAdapter(this, movieDetailsTrailerAdapterOnClickHandler, listMovieTrailers);
+        mMovieDetailsTrailerAdapter = new MovieDetailsTrailerAdapter(this, movieDetailsTrailerAdapterOnClickHandler, new LinkedList<MovieVideos>());
+        DividerItemDecoration dividerItemDecoration =
+                new DividerItemDecoration(mRecyclerViewTrailers.getContext(),
+                        mLinearLayoutManagerTrailers.getOrientation());
+        mRecyclerViewTrailers.addItemDecoration(dividerItemDecoration);
         mRecyclerViewTrailers.setAdapter(mMovieDetailsTrailerAdapter);
 
-    }
 
-    private void setInformationToViews(com.example.e5813.movieapp.models.MovieDetails mMovie){
-        mTitle.setText(mMovie.getTitle());
-        mYear.setText(MovieUtils.getYearFromDate(mMovie.getYear()));
-        mDuration.setText(MovieUtils.getDurationInMinutes(mMovie.getDuration()));
-        mDescription.setText(mMovie.getDescription());
-        mRating.setText(MovieUtils.convertRatingPercentage(mMovie.getRating()));
-        Picasso.get().load(MovieUtils.getFullUrlImage(mMovie.getUtlImage())).into(mCover);
+
+        // adapter and viewHolder para os trailers
+        mLinearLayoutManagerReviews = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerViewsReviews.setLayoutManager(mLinearLayoutManagerReviews);
+        mRecyclerViewsReviews.setHasFixedSize(true);
+        movieDetailsReviewsAdapterOnClickHandler = this;
+        mMovieDetailsReviewsAdapter = new MovieDetailsReviewsAdapter(this, movieDetailsReviewsAdapterOnClickHandler, new LinkedList<MovieReviews>());
+        DividerItemDecoration dividerItemDecorationReviews =
+                new DividerItemDecoration(mRecyclerViewTrailers.getContext(),
+                        mLinearLayoutManagerTrailers.getOrientation());
+        mRecyclerViewsReviews.addItemDecoration(dividerItemDecorationReviews);
+        mRecyclerViewsReviews.setAdapter(mMovieDetailsReviewsAdapter);
+
     }
 
 
     private void  getMovieDetails(int idMovie){
-
         TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
         MoviesRepository.getMoviesDetails(api, idMovie, new OnGetMovieDetails() {
             @Override
@@ -131,6 +150,53 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
                 createAndLoadToastNoInternetConnection();
             }
         });
+    }
+
+
+    private void setInformationToViews(com.example.e5813.movieapp.models.MovieDetails mMovie){
+        mTitle.setText(mMovie.getTitle());
+        mYear.setText(MovieUtils.getYearFromDate(mMovie.getYear()));
+        mDuration.setText(MovieUtils.getDurationInMinutes(mMovie.getDuration()));
+        mDescription.setText(mMovie.getDescription());
+        mRating.setText(MovieUtils.convertRatingPercentage(mMovie.getRating()));
+        Picasso.get().load(MovieUtils.getFullUrlImage(mMovie.getUtlImage())).into(mCover);
+    }
+
+
+
+    private void getTrailers(int idMovie){
+        TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
+        MoviesRepository.getVideosFromMovies(api, idMovie, new OnGetVideosFromMovie() {
+            @Override
+            public void onSuccess(List<MovieVideos> movieVideos) { TrailersToAdapter(movieVideos); }
+            @Override
+            public void onError() {
+                createAndLoadToastNoInternetConnection();
+            }
+        });
+    }
+
+  private void  TrailersToAdapter(List<MovieVideos> movieVideos){
+        mMovieDetailsTrailerAdapter.appendMovies(movieVideos);
+  }
+
+
+    private void getReviews(int idMovie){
+        TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
+        MoviesRepository.getMoviesReviews(api, idMovie, new OnGetMovieReviews() {
+            @Override
+            public void onSuccess(List<MovieReviews> movieReviews) { ReviewsToAdapter(movieReviews); }
+            @Override
+            public void onError() {
+                createAndLoadToastNoInternetConnection();
+            }
+        });
+    }
+
+    private void  ReviewsToAdapter(List<MovieReviews> movieReviews){
+        mMovieDetailsReviewsAdapter.appendMovies(movieReviews);
+        mMovieDetailsReviewsAdapter.appendMovies(movieReviews);
+        mMovieDetailsReviewsAdapter.appendMovies(movieReviews);
     }
 
     @Override
@@ -154,6 +220,8 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         if(isConnected){
             hiddeViewNoInternetConnection();
             getMovieDetails(mIdMovie);
+            getTrailers(mIdMovie);
+            getReviews(mIdMovie);
             showAllViews();
         }else{
             hideAllViews();
@@ -161,11 +229,6 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         }
     }
 
-
-    private void addTrailersToAdapter(){
-
-
-    }
 
    private void hideAllViews(){
          mViewMovieInformation.setVisibility(View.INVISIBLE);
@@ -212,6 +275,28 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
 
     @Override
     public void onClickTrailer(int id) {
+        watchYoutubeVideo(this,mMovieDetailsTrailerAdapter.getTrailerFromList(id).getKey());
+    }
 
+    @Override
+    public void onClickReviews(int id) {
+        // handler action here
+    }
+
+    public static void watchYoutubeVideo(Context context, String id){
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + id));
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            List<ResolveInfo> activities = packageManager.queryIntentActivities(appIntent, 0);
+            boolean isIntentSafe = activities.size() > 0;
+
+            // Start an activity if it's safe
+            if (isIntentSafe) {
+                context.startActivity(appIntent);
+            }
+           // context.startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            context.startActivity(appIntent);
+        }
     }
 }

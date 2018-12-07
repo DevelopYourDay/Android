@@ -16,6 +16,7 @@
         <activity android:name=".activities.MovieList">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -26,7 +27,7 @@
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MovieList"/>
+                android:value=".activities.MovieList" />
         </activity>
 
         <receiver

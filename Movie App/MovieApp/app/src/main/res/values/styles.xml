@@ -13,34 +13,41 @@
     </style>
 
     <style name="movie_detail_title" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:textSize"> @dimen/size_title_movie</item>
+        <item name="android:textSize">@dimen/size_title_movie</item>
         <item name="android:textColor">@color/primary_light</item>
         <item name="android:background">@color/primary_dark</item>
     </style>
 
     <style name="movie_detail_year" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:textSize"> @dimen/size_movie_year</item>
+        <item name="android:textSize">@dimen/size_movie_year</item>
         <item name="android:textColor">@color/secondary_text</item>
     </style>
 
     <style name="movie_detail_duration" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:textSize"> @dimen/size_movie_duration</item>
+        <item name="android:textSize">@dimen/size_movie_duration</item>
         <item name="android:textColor">@color/secondary_text</item>
     </style>
 
     <style name="movie_detail_rating" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:textSize"> @dimen/size_movie_rating</item>
+        <item name="android:textSize">@dimen/size_movie_rating</item>
         <item name="android:textColor">@color/secondary_text</item>
     </style>
 
     <style name="movie_detail_mark_as_favorite" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="android:textSize"> @dimen/size_movie_rating</item>
+        <item name="android:textSize">@dimen/size_movie_rating</item>
         <item name="android:textColor">@color/secondary_text</item>
         <item name="android:background">@color/green_wather</item>
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 
 </resources>

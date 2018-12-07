@@ -24,7 +24,7 @@ public class MoviesRepository {
 
     final static String LANGUAGE = "en-US";
 
-    //final static String API_KEY = "b7ecf52683a89db9aedbdc0ff9f31f25";
+    final static String API_KEY = "b7ecf52683a89db9aedbdc0ff9f31f25";
 
     final static String YOUTUBE_URL = "https://www.youtube.com/watch?v=";
 

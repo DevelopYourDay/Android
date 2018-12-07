@@ -49,8 +49,8 @@
 
     <ImageView
         android:id="@+id/img_details_movie_cover"
-        android:layout_width="105dp"
-        android:layout_height="158dp"
+        android:layout_width="150dp"
+        android:layout_height="226dp"
         android:layout_marginStart="28dp"
         android:layout_marginTop="10dp"
         android:contentDescription="@string/content_description_cover_movie"
@@ -98,7 +98,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/tv_movie_duration"
         app:layout_constraintTop_toBottomOf="@+id/tv_movie_rating"
-        tools:text="MARK AS FAVORITE" />
+        android:text="MARK AS FAVORITE" />
 
     <TextView
         android:id="@+id/tv_movie_descriptions"
