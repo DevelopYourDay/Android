@@ -1,6 +1,6 @@
-package com.example.e5813.movieapp.models.Responses;
+package com.example.e5813.movieapp.models.movies.responses;
 
-import com.example.e5813.movieapp.models.MovieReviews;
+import com.example.e5813.movieapp.models.movies.MovieReview;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -17,9 +17,9 @@ public class MovieReviewsResponse {
 
     @SerializedName("results")
     @Expose
-    private List<MovieReviews> listMoviesReviews;
+    private List<MovieReview> listMoviesReviews;
 
-    public MovieReviewsResponse(int id, int page, List<MovieReviews> listMoviesReviews) {
+    public MovieReviewsResponse(int id, int page, List<MovieReview> listMoviesReviews) {
         this.id = id;
         this.page = page;
         this.listMoviesReviews = listMoviesReviews;
@@ -41,11 +41,11 @@ public class MovieReviewsResponse {
         this.page = page;
     }
 
-    public List<MovieReviews> getListMoviesReviews() {
+    public List<MovieReview> getListMoviesReviews() {
         return listMoviesReviews;
     }
 
-    public void setListMoviesReviews(List<MovieReviews> listMoviesReviews) {
+    public void setListMoviesReviews(List<MovieReview> listMoviesReviews) {
         this.listMoviesReviews = listMoviesReviews;
     }
 }

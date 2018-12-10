@@ -14,21 +14,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.e5813.movieapp.R;
 import com.example.e5813.movieapp.data.MoviesContract;
-import com.example.e5813.movieapp.data.MoviesProvider;
-import com.example.e5813.movieapp.models.Movie;
-import com.example.e5813.movieapp.networks.Interfaces.OnGetMovieTopRated;
-import com.example.e5813.movieapp.networks.Interfaces.OnGetMoviesCallback;
-import com.example.e5813.movieapp.networks.Interfaces.TmdbApiService;
+import com.example.e5813.movieapp.models.movies.Movie;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.ConnectivityReceiver;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.MyApplication;
-import com.example.e5813.movieapp.networks.MoviesRepository;
-import com.example.e5813.movieapp.networks.TmdbClientInstance;
+import com.example.e5813.movieapp.networks.tmdb.movies.FetchingMovie;
 import com.example.e5813.movieapp.views.adapter.MovieAdapter;
-import com.example.e5813.movieapp.views.notifications.Toasts;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,32 +29,32 @@ import java.util.List;
 public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesAdapterOnClickHandler, ConnectivityReceiver.ConnectivityReceiverListener {
 
     public static final String PREFS_NAME_FILE = "MyPrefsFile";
-    // default MOVIES_POPULAR
-    public static final String PREFS_SORT_MOVIE = "MOVIES_POPULAR";
+    private static final String MOVIES_POPULAR = "MOVIES_POPULAR";
+    private static final String MOVIES_TOP_RATED = "MOVIES_TOP_RATED";
+    private static final String MOVIES_FAVORITES = "MOVIES_FAVORITES";
+    private static final String PREFS_MOVIE_TYPE_SEARCH_KEY = "MOVIE_";
+    public static final String PREFS_SORT_MOVIE_DEFAULT = MOVIES_POPULAR;
 
     private static final int DEFAULT_VALUE_FROM_PAGE_REQUEST = 1;
+    private static final boolean DEFAULT_VALUE_FROM_FETECHING_MOVIES_REQUEST = false;
 
     private static final String SAVED_RECYCLER_VIEW_STATUS_ID = "SAVED_RECYCLER_VIEW_STATUS_ID";
     private static final String SAVED_RECYCLER_VIEW_POSITION = "SAVED_RECYCLER_VIEW_ADAPTER_ID";
 
     private Parcelable mlistState;
-
-
     public static final String PARCEL_MOVIE_ID = "PARCEL_MOVIE_ID";
 
-    private static final String MOVIES_POPULAR = "MOVIES_POPULAR";
-    private static final String MOVIES_TOP_RATED = "MOVIES_TOP_RATED";
-    private static final String MOVIES_FAVORITES = "MOVIES_FAVORITES";
+
 
     private RecyclerView mRecyclerView;
     private ProgressBar mLoadingIndicator;
     private View mNoInternetConnection;
     private MovieAdapter mMovieAdapter;
-    //private FetchMovies mfetchMovies;
     private GridLayoutManager layoutManager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
     private Cursor mCursor;
+
+    private FetchingMovie fetchingMovies;
 
     /**
      * flag that we will use to determine if we are currently fetching the next page.
@@ -73,7 +66,6 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
      * Initialized to page 1.
      * Every time we scrolled half of the list we increment it by one which is the next page.
      */
-    private int currentPage = 1;
 
     private MovieAdapter.MoviesAdapterOnClickHandler moviesAdapterOnClickHandler;
 
@@ -87,17 +79,23 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
         mLoadingIndicator = (ProgressBar) findViewById(R.id.widget_progress_bar_list_movies);
         mNoInternetConnection = (View) findViewById(R.id.layout_no_internet_connection);
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_movie_list_refresh);
+
         layoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
         moviesAdapterOnClickHandler = this;
-        //mfetchMovies = new FetchMovies(this);
-        List<Movie> listMovie = new LinkedList<>();
-        mMovieAdapter = new MovieAdapter(this, moviesAdapterOnClickHandler, listMovie);
+        mMovieAdapter = new MovieAdapter(this, moviesAdapterOnClickHandler,  new LinkedList<Movie>());
         mRecyclerView.setAdapter(mMovieAdapter);
-        setupOnScrollListener();
-        isConnected(ConnectivityReceiver.isConnected());
 
+        fetchingMovies  = new FetchingMovie(DEFAULT_VALUE_FROM_FETECHING_MOVIES_REQUEST, DEFAULT_VALUE_FROM_PAGE_REQUEST);
+
+        setupOnScrollListener();
+        setupSwipeRefreshLayout();
+        isConnected(ConnectivityReceiver.isConnected());
+    }
+
+
+    private void setupSwipeRefreshLayout(){
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -105,9 +103,7 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
-
     }
-
 
     @Override
     protected void onResume() {
@@ -130,11 +126,11 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
         if (isConnected) {
             hideViewNoInternetConnection();
             showLoading();
-            addMoviesToAdapter(loadSortMovieDefinidoFromPreferences());
+            addMoviesToAdapter(getPredefinedTypeSearchMovie());
             showMovieDataView();
         } else {
-            if(loadSortMovieDefinidoFromPreferences().equals(MOVIES_FAVORITES)){
-                addMoviesToAdapter(loadSortMovieDefinidoFromPreferences());
+            if(getPredefinedTypeSearchMovie().equals(MOVIES_FAVORITES)){
+                addMoviesToAdapter(getPredefinedTypeSearchMovie());
             }else{
                 hideProgressBarAndRv();
                 showViewNoInternetConnection();
@@ -146,10 +142,10 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
     private void addMoviesToAdapter(String type) {
         switch (type) {
             case MOVIES_POPULAR:
-                getMovieListByPopular();
+                fetchingMovies.getPopularMovies(mMovieAdapter, this);
                 break;
             case MOVIES_TOP_RATED:
-                getMovieListByTopRated();
+                fetchingMovies.getTopRatedMovies(mMovieAdapter, this);
                 break;
             case MOVIES_FAVORITES:
                 getMoviesFavorites();
@@ -196,7 +192,6 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
         return super.onCreateOptionsMenu(menu);
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -215,19 +210,19 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.popular:
-                        currentPage = DEFAULT_VALUE_FROM_PAGE_REQUEST;
-                        changesortMoviePReference(MOVIES_POPULAR);
+                        fetchingMovies.setCurrentPage(DEFAULT_VALUE_FROM_PAGE_REQUEST);
+                        setPredefinedTypeSearchMovie(MOVIES_POPULAR);
                         mMovieAdapter.cleanMovies();
                         isConnected(ConnectivityReceiver.isConnected());
                         return true;
                     case R.id.top_rated:
-                        currentPage = DEFAULT_VALUE_FROM_PAGE_REQUEST;
-                        changesortMoviePReference(MOVIES_TOP_RATED);
+                        fetchingMovies.setCurrentPage(DEFAULT_VALUE_FROM_PAGE_REQUEST);
+                        setPredefinedTypeSearchMovie(MOVIES_TOP_RATED);
                         mMovieAdapter.cleanMovies();
                         isConnected(ConnectivityReceiver.isConnected());
                         return true;
                     case R.id.favorites:
-                        changesortMoviePReference(MOVIES_FAVORITES);
+                        setPredefinedTypeSearchMovie(MOVIES_FAVORITES);
                         mMovieAdapter.cleanMovies();
                         getMoviesFavorites();
                         return true;
@@ -239,7 +234,6 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
         sortMenu.inflate(R.menu.menu_movie_sorte);
         sortMenu.show();
     }
-
 
     private void getMoviesFavorites() {
         String[] mProjection = {
@@ -266,73 +260,22 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
         refreshAdapterFavorites(listMovie);
     }
 
-    private void changesortMoviePReference(String preference) {
+    private void setPredefinedTypeSearchMovie(String preference) {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME_FILE, 0);
         SharedPreferences.Editor editor = settings.edit();
-        editor.putString(PREFS_SORT_MOVIE, preference);
+        editor.putString(PREFS_MOVIE_TYPE_SEARCH_KEY, preference);
         editor.commit();
     }
 
-    private String loadSortMovieDefinidoFromPreferences() {
+    private String getPredefinedTypeSearchMovie() {
         SharedPreferences settings = getSharedPreferences(PREFS_NAME_FILE, 0);
-        String moviePref = settings.getString(PREFS_SORT_MOVIE, PREFS_SORT_MOVIE);
+        String moviePref = settings.getString(PREFS_MOVIE_TYPE_SEARCH_KEY, PREFS_SORT_MOVIE_DEFAULT);
         return moviePref;
-    }
-
-    private void refreshAdapter(List<Movie> movies) {
-        mMovieAdapter.appendMovies(movies);
     }
 
     private void refreshAdapterFavorites(List<Movie> movies) {
         mMovieAdapter.cleanMovies();
         mMovieAdapter.appendMovies(movies);
-    }
-
-    private void createAndLoadToastNoInternetConnection() {
-        Toast toast = new Toasts().NoInternetConnection(this);
-        toast.show();
-    }
-
-    /**
-     * Fetech Movies sorted by Popular
-     */
-    public void getMovieListByPopular() {
-        isFetchingMovies = true;
-        final TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
-        MoviesRepository.getMovies(api, currentPage, new OnGetMoviesCallback() {
-            @Override
-            public void onSuccess(int page, List<Movie> movies) {
-                refreshAdapter(movies);
-                currentPage = page;
-                isFetchingMovies = false;
-            }
-
-            @Override
-            public void onError() {
-                createAndLoadToastNoInternetConnection();
-            }
-        });
-    }
-
-    /**
-     * Fetech moveis sorted by Top Rated
-     */
-    public void getMovieListByTopRated() {
-        isFetchingMovies = true;
-        TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
-        MoviesRepository.getMoviesTopRated(api, currentPage, new OnGetMovieTopRated() {
-            @Override
-            public void onSuccess(int page, List<Movie> movies) {
-                refreshAdapter(movies);
-                currentPage = page;
-                isFetchingMovies = false;
-            }
-
-            @Override
-            public void onError() {
-                createAndLoadToastNoInternetConnection();
-            }
-        });
     }
 
 
@@ -346,12 +289,11 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
                     int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
 
                     if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
-                        if (!isFetchingMovies) {
-                            currentPage++;
+                        if (!fetchingMovies.getFetchingMovies()) {
+                            fetchingMovies.setCurrentPage((fetchingMovies.getCurrentPage()+1));
                             isConnected(ConnectivityReceiver.isConnected());
                         }
                     }
-
             }
         });
     }

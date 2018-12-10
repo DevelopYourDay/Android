@@ -1,12 +1,12 @@
-package com.example.e5813.movieapp.models.Responses;
+package com.example.e5813.movieapp.models.movies.responses;
 
-import com.example.e5813.movieapp.models.MovieVideos;
+import com.example.e5813.movieapp.models.movies.MovieTrailler;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class MovieVideosResponse {
+public class MovieTrailersResponse {
 
 
         @SerializedName("id")
@@ -15,9 +15,9 @@ public class MovieVideosResponse {
 
         @SerializedName("results")
         @Expose
-        private List<MovieVideos> listvideosFromMovie;
+        private List<MovieTrailler> listvideosFromMovie;
 
-        public MovieVideosResponse(int id, List<MovieVideos> listMovies) {
+        public MovieTrailersResponse(int id, List<MovieTrailler> listMovies) {
             this.id = id;
             this.listvideosFromMovie = listMovies;
         }
@@ -31,11 +31,11 @@ public class MovieVideosResponse {
         this.id = id;
     }
 
-    public List<MovieVideos> getListvideosFromMovie() {
+    public List<MovieTrailler> getListvideosFromMovie() {
         return listvideosFromMovie;
     }
 
-    public void setListvideosFromMovie(List<MovieVideos> listvideosFromMovie) {
+    public void setListvideosFromMovie(List<MovieTrailler> listvideosFromMovie) {
         this.listvideosFromMovie = listvideosFromMovie;
     }
 }

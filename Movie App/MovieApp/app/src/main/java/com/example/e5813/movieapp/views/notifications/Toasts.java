@@ -16,7 +16,7 @@ public class  Toasts extends AppCompatActivity {
 
 
 
-    public Toast NoInternetConnection(Context context){
+    public static Toast NoInternetConnectionToast(Context context){
         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         View layout = inflater.inflate(R.layout.toast_no_internet_connection, null);
         TextView text = (TextView) layout.findViewById(R.id.tv_no_internet_connection);
@@ -25,12 +25,12 @@ public class  Toasts extends AppCompatActivity {
         toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
         toast.setDuration(Toast.LENGTH_SHORT);
         toast.setView(layout);
-        return toast;
+       toast.show();
+       return toast;
     }
 
 
     public Toast MovieAddSucessfullToFavoriteList(Context context){
-
         Toast toast = Toast.makeText(context, getResources().getString(R.string.info_add_movie_favorite_list), Toast.LENGTH_SHORT);
         return toast;
     }

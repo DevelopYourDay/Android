@@ -1,12 +1,9 @@
-package com.example.e5813.movieapp.models;
+package com.example.e5813.movieapp.models.movies;
 
-import com.example.e5813.movieapp.models.Responses.MovieReviewsResponse;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
-public class MovieReviews {
+public class MovieReview {
 
 
     @SerializedName("author")
@@ -25,7 +22,7 @@ public class MovieReviews {
     @Expose
     private String url;
 
-    public MovieReviews(String author, String content, String id, String url) {
+    public MovieReview(String author, String content, String id, String url) {
         this.author = author;
         this.content = content;
         this.id = id;

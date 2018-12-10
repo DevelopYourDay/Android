@@ -1,4 +1,4 @@
-package com.example.e5813.movieapp.views.adapter;
+package com.example.e5813.movieapp.views.adapter.ViewHolder;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -6,10 +6,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.example.e5813.movieapp.R;
+import com.example.e5813.movieapp.views.adapter.MovieAdapter;
 
 public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-final ImageView movieCoverImage;
+    public final ImageView movieCoverImage;
 final private MovieAdapter.MoviesAdapterOnClickHandler mClickHandler;
 
     /**

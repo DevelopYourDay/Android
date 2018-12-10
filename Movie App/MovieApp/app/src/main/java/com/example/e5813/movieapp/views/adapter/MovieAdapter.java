@@ -7,8 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.example.e5813.movieapp.R;
-import com.example.e5813.movieapp.models.Movie;
+import com.example.e5813.movieapp.models.movies.Movie;
 import com.example.e5813.movieapp.utils.MovieUtils;
+import com.example.e5813.movieapp.views.adapter.ViewHolder.MovieAdapterViewHolder;
 import com.squareup.picasso.Picasso;
 
 

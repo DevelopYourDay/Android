@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.e5813.movieapp.R;
-import com.example.e5813.movieapp.models.MovieReviews;
-import com.example.e5813.movieapp.models.MovieVideos;
+import com.example.e5813.movieapp.models.movies.MovieReview;
+import com.example.e5813.movieapp.views.adapter.ViewHolder.MovieDetailsReviewsViewHolder;
 
 import java.util.List;
 
@@ -19,11 +19,11 @@ public class MovieDetailsReviewsAdapter extends RecyclerView.Adapter<MovieDetail
         void onClickReviews(int id);
     }
 
-    private List<MovieReviews> mMovieDetailsReviewsList;
+    private List<MovieReview> mMovieDetailsReviewsList;
     private final Context mContext;
     final private MovieDetailsReviewsAdapterOnClickHandler mClickHandler;
 
-    public MovieDetailsReviewsAdapter(Context mContext, MovieDetailsReviewsAdapterOnClickHandler mClickHandler, List<MovieReviews> mMovieDetailsReviewsList) {
+    public MovieDetailsReviewsAdapter(Context mContext, MovieDetailsReviewsAdapterOnClickHandler mClickHandler, List<MovieReview> mMovieDetailsReviewsList) {
         this.mMovieDetailsReviewsList = mMovieDetailsReviewsList;
         this.mContext = mContext;
         this.mClickHandler = mClickHandler;
@@ -52,7 +52,7 @@ public class MovieDetailsReviewsAdapter extends RecyclerView.Adapter<MovieDetail
      */
     @Override
     public void onBindViewHolder(@NonNull MovieDetailsReviewsViewHolder holder, int position) {
-        MovieReviews  movieReviews= mMovieDetailsReviewsList.get(position);
+        MovieReview movieReviews= mMovieDetailsReviewsList.get(position);
         holder.mTxtNameAuthor.setText(movieReviews.getAuthor());
         holder.mTxtNComment.setText(movieReviews.getContent());
     }
@@ -69,7 +69,7 @@ public class MovieDetailsReviewsAdapter extends RecyclerView.Adapter<MovieDetail
     }
 
 
-    public void appendMovies(List<MovieReviews> ReviewsToAppend) {
+    public void appendReviews(List<MovieReview> ReviewsToAppend) {
         mMovieDetailsReviewsList.addAll(ReviewsToAppend);
         notifyDataSetChanged();
     }

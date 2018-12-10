@@ -7,18 +7,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -26,22 +23,20 @@ import android.widget.Toast;
 
 import com.example.e5813.movieapp.R;
 import com.example.e5813.movieapp.data.MoviesContract;
-import com.example.e5813.movieapp.data.MoviesProvider;
-import com.example.e5813.movieapp.models.Movie;
-import com.example.e5813.movieapp.models.MovieReviews;
-import com.example.e5813.movieapp.models.MovieVideos;
-import com.example.e5813.movieapp.networks.Interfaces.OnGetMovieReviews;
-import com.example.e5813.movieapp.networks.Interfaces.OnGetVideosFromMovie;
+import com.example.e5813.movieapp.models.movies.MovieDetail;
+import com.example.e5813.movieapp.models.movies.Movie;
+import com.example.e5813.movieapp.models.movies.MovieReview;
+import com.example.e5813.movieapp.models.movies.MovieTrailler;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.ConnectivityReceiver;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.MyApplication;
-import com.example.e5813.movieapp.networks.MoviesRepository;
-import com.example.e5813.movieapp.networks.Interfaces.OnGetMovieDetails;
+import com.example.e5813.movieapp.networks.tmdb.movies.FetchingMovie;
+import com.example.e5813.movieapp.networks.tmdb.movies.MovieRepository;
+import com.example.e5813.movieapp.networks.tmdb.interfaces.GetDetailsFromMovie;
 
-import com.example.e5813.movieapp.networks.Interfaces.TmdbApiService;
-import com.example.e5813.movieapp.networks.TmdbClientInstance;
+import com.example.e5813.movieapp.networks.tmdb.interfaces.TmdbApiService;
+import com.example.e5813.movieapp.networks.tmdb.TmdbClientInstance;
 import com.example.e5813.movieapp.utils.MovieUtils;
 import com.example.e5813.movieapp.utils.MoviesDatesUtils;
-import com.example.e5813.movieapp.views.adapter.MovieAdapter;
 import com.example.e5813.movieapp.views.adapter.MovieDetailsReviewsAdapter;
 import com.example.e5813.movieapp.views.adapter.MovieDetailsTrailerAdapter;
 import com.example.e5813.movieapp.views.notifications.Toasts;
@@ -78,6 +73,8 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     private MovieDetailsTrailerAdapter mMovieDetailsTrailerAdapter;
     private MovieDetailsReviewsAdapter mMovieDetailsReviewsAdapter;
 
+    private FetchingMovie fetchingMovie;
+
     private MovieDetailsTrailerAdapter.MovieDetailsTrailerAdapterOnClickHandler movieDetailsTrailerAdapterOnClickHandler;
     private  MovieDetailsReviewsAdapter.MovieDetailsReviewsAdapterOnClickHandler movieDetailsReviewsAdapterOnClickHandler;
 
@@ -91,6 +88,7 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         Intent IntentListMovies = getIntent();
         if (IntentListMovies != null) {
             if (IntentListMovies.hasExtra(MovieList.PARCEL_MOVIE_ID)) {
+                fetchingMovie =  new FetchingMovie();
                 mIdMovie = (Movie)IntentListMovies.getSerializableExtra(MovieList.PARCEL_MOVIE_ID);
                 loadViews();
             }
@@ -124,7 +122,7 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mRecyclerViewTrailers.setLayoutManager(mLinearLayoutManagerTrailers);
         mRecyclerViewTrailers.setHasFixedSize(true);
         movieDetailsTrailerAdapterOnClickHandler = this;
-        mMovieDetailsTrailerAdapter = new MovieDetailsTrailerAdapter(this, movieDetailsTrailerAdapterOnClickHandler, new LinkedList<MovieVideos>());
+        mMovieDetailsTrailerAdapter = new MovieDetailsTrailerAdapter(this, movieDetailsTrailerAdapterOnClickHandler, new LinkedList<MovieTrailler>());
         DividerItemDecoration dividerItemDecoration =
                 new DividerItemDecoration(mRecyclerViewTrailers.getContext(),
                         mLinearLayoutManagerTrailers.getOrientation());
@@ -138,7 +136,7 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mRecyclerViewsReviews.setLayoutManager(mLinearLayoutManagerReviews);
         mRecyclerViewsReviews.setHasFixedSize(true);
         movieDetailsReviewsAdapterOnClickHandler = this;
-        mMovieDetailsReviewsAdapter = new MovieDetailsReviewsAdapter(this, movieDetailsReviewsAdapterOnClickHandler, new LinkedList<MovieReviews>());
+        mMovieDetailsReviewsAdapter = new MovieDetailsReviewsAdapter(this, movieDetailsReviewsAdapterOnClickHandler, new LinkedList<MovieReview>());
         DividerItemDecoration dividerItemDecorationReviews =
                 new DividerItemDecoration(mRecyclerViewTrailers.getContext(),
                         mLinearLayoutManagerTrailers.getOrientation());
@@ -210,23 +208,9 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
             return false;
     }
 
-    private void  getMovieDetails(int idMovie){
-        TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
-        MoviesRepository.getMoviesDetails(api, idMovie, new OnGetMovieDetails() {
-            @Override
-            public void onSuccess(com.example.e5813.movieapp.models.MovieDetails movieDetails) {
-                setInformationToViews(movieDetails);
-            }
-
-            @Override
-            public void onError() {
-                createAndLoadToastNoInternetConnection();
-            }
-        });
-    }
 
 
-    private void setInformationToViews(com.example.e5813.movieapp.models.MovieDetails mMovie){
+    private void setInformationToViews(MovieDetail mMovie){
         mTitle.setText(mMovie.getTitle());
         mYear.setText(MovieUtils.getYearFromDate(mMovie.getYear()));
         mDuration.setText(MovieUtils.getDurationInMinutes(mMovie.getDuration()));
@@ -235,39 +219,6 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         Picasso.get().load(MovieUtils.getFullUrlImage(mMovie.getUtlImage())).into(mCover);
     }
 
-
-    private void getTrailers(int idMovie){
-        TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
-        MoviesRepository.getVideosFromMovies(api, idMovie, new OnGetVideosFromMovie() {
-            @Override
-            public void onSuccess(List<MovieVideos> movieVideos) { TrailersToAdapter(movieVideos); }
-            @Override
-            public void onError() {
-                createAndLoadToastNoInternetConnection();
-            }
-        });
-    }
-
-  private void  TrailersToAdapter(List<MovieVideos> movieVideos){
-        mMovieDetailsTrailerAdapter.appendMovies(movieVideos);
-  }
-
-    private void getReviews(int idMovie){
-        TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
-        MoviesRepository.getMoviesReviews(api, idMovie, new OnGetMovieReviews() {
-            @Override
-            public void onSuccess(List<MovieReviews> movieReviews) { ReviewsToAdapter(movieReviews); }
-            @Override
-            public void onError() {
-                createAndLoadToastNoInternetConnection();
-            }
-        });
-    }
-
-    private void  ReviewsToAdapter(List<MovieReviews> movieReviews){
-        mMovieDetailsReviewsAdapter.appendMovies(movieReviews);
-        mMovieDetailsReviewsAdapter.appendMovies(movieReviews);
-    }
 
     @Override
     protected void onStart() {
@@ -289,9 +240,9 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     private void isConnected(boolean isConnected){
         if(isConnected){
             hiddeViewNoInternetConnection();
-            getMovieDetails(mIdMovie.getId());
-            getTrailers(mIdMovie.getId());
-            getReviews(mIdMovie.getId());
+            setInformationToViews(fetchingMovie.getMovieDetails(mIdMovie.getId()));
+            //getTrailers(mIdMovie.getId());
+            //getReviews(mIdMovie.getId());
             showAllViews();
         }else{
             hideAllViews();
@@ -320,8 +271,8 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
    }
 
    private void createAndLoadToastNoInternetConnection(){
-        Toast toast = new Toasts().NoInternetConnection(this);
-        toast.show();
+        //Toast toast = new Toasts().NoInternetConnection(this);
+        //toast.show();
     }
 
 

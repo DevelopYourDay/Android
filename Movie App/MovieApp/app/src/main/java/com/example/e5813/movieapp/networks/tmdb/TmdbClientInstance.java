@@ -1,4 +1,4 @@
-package com.example.e5813.movieapp.networks;
+package com.example.e5813.movieapp.networks.tmdb;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

@@ -1,10 +1,10 @@
-package com.example.e5813.movieapp.models;
+package com.example.e5813.movieapp.models.movies;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 
-public class MovieVideos {
+public class MovieTrailler {
     @SerializedName("id")
     @Expose
     private String id;
@@ -29,7 +29,7 @@ public class MovieVideos {
     @Expose
     private int sizeQuality;
 
-    public MovieVideos(String id, String name, String key, String site, String type, int sizeQuality) {
+    public MovieTrailler(String id, String name, String key, String site, String type, int sizeQuality) {
         this.id = id;
         this.name = name;
         this.key = key;

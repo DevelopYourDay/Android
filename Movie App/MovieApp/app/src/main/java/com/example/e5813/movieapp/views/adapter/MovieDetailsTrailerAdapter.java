@@ -8,10 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.e5813.movieapp.R;
-import com.example.e5813.movieapp.models.Movie;
-import com.example.e5813.movieapp.models.MovieVideos;
-import com.example.e5813.movieapp.utils.MovieUtils;
-import com.squareup.picasso.Picasso;
+import com.example.e5813.movieapp.models.movies.MovieTrailler;
+import com.example.e5813.movieapp.views.adapter.ViewHolder.MovieDetailsTrailersViewHolder;
 
 import java.util.List;
 
@@ -21,11 +19,11 @@ public class MovieDetailsTrailerAdapter  extends RecyclerView.Adapter<MovieDetai
         void onClickTrailer(int id);
     }
 
-    private List<MovieVideos> mMovieDetailsVideosList;
+    private List<MovieTrailler> mMovieDetailsVideosList;
     private final Context mContext;
     final private MovieDetailsTrailerAdapterOnClickHandler mClickHandler;
 
-    public MovieDetailsTrailerAdapter(Context mContext, MovieDetailsTrailerAdapterOnClickHandler mClickHandler,List<MovieVideos> mMovieDetailsVideosList) {
+    public MovieDetailsTrailerAdapter(Context mContext, MovieDetailsTrailerAdapterOnClickHandler mClickHandler,List<MovieTrailler> mMovieDetailsVideosList) {
         this.mMovieDetailsVideosList = mMovieDetailsVideosList;
         this.mContext = mContext;
         this.mClickHandler = mClickHandler;
@@ -54,7 +52,7 @@ public class MovieDetailsTrailerAdapter  extends RecyclerView.Adapter<MovieDetai
      */
     @Override
     public void onBindViewHolder(@NonNull MovieDetailsTrailersViewHolder holder, int position) {
-        MovieVideos  movieVideos = mMovieDetailsVideosList.get(position);
+        MovieTrailler movieVideos = mMovieDetailsVideosList.get(position);
         holder.mTxtNameTrailer.setText(movieVideos.getName());
     }
 
@@ -70,7 +68,7 @@ public class MovieDetailsTrailerAdapter  extends RecyclerView.Adapter<MovieDetai
     }
 
 
-    public void appendMovies(List<MovieVideos> trailersToAppend) {
+    public void appendMovies(List<MovieTrailler> trailersToAppend) {
         mMovieDetailsVideosList.addAll(trailersToAppend);
         notifyDataSetChanged();
     }
@@ -81,7 +79,7 @@ public class MovieDetailsTrailerAdapter  extends RecyclerView.Adapter<MovieDetai
     }
 
 
-    public MovieVideos getTrailerFromList(int position){
+    public MovieTrailler getTrailerFromList(int position){
         if(position >= 0){
             return mMovieDetailsVideosList.get(position);
         }
