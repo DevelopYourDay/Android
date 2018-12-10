@@ -1,10 +1,10 @@
-package com.example.e5813.movieapp.data;
+package com.example.e5813.movieapp.localData;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.e5813.movieapp.data.MoviesContract.MoviesFavoritesEntry;
+import com.example.e5813.movieapp.localData.MoviesContract.MoviesFavoritesEntry;
 
 public class MoviesDbHelper extends SQLiteOpenHelper {
 
@@ -28,7 +28,8 @@ public class MoviesDbHelper extends SQLiteOpenHelper {
                 MoviesFavoritesEntry.COLUMN_YEAR  + " TEXT NOT NULL, "                    +
                 MoviesFavoritesEntry.COLUMN_DURATION   + " TEXT NOT NULL, "                    +
                 MoviesFavoritesEntry.COLUMN_RATING + " TEXT NOT NULL, "                    +
-                " UNIQUE (" + MoviesFavoritesEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
+                MoviesFavoritesEntry.COLUMN_DESCRIPTION + " TEXT NOT NULL, " +
+        " UNIQUE (" + MoviesFavoritesEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
 
         db.execSQL(SQL_CREATE_FAVORITES_MOVIES_TABLE);
     }

@@ -1,4 +1,4 @@
-package com.example.e5813.movieapp.data;
+package com.example.e5813.movieapp.localData;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -28,7 +28,7 @@ public class MoviesContract {
         public static final String COLUMN_YEAR = "year";
         public static final String COLUMN_DURATION = "duration";
         public static final String COLUMN_RATING = "rating";
-
+        public static final String COLUMN_DESCRIPTION = "description";
 
         public static Uri buildWeatherUriWithDate(long date) {
             return CONTENT_URI.buildUpon()
@@ -42,10 +42,13 @@ public class MoviesContract {
                     .build();
         }
 
-
         public static String getSqlSelectForTodayOnwards() {
             long normalizedUtcNow = MoviesDatesUtils.normalizeDate(System.currentTimeMillis());
             return MoviesContract.MoviesFavoritesEntry.COLUMN_DATE + " >= " + normalizedUtcNow;
         }
+
+
+
+
     }
 }

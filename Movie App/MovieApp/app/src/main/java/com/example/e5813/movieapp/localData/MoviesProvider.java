@@ -1,7 +1,6 @@
-package com.example.e5813.movieapp.data;
+package com.example.e5813.movieapp.localData;
 
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -71,13 +70,13 @@ public class MoviesProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return cursor;
     }
 
     @Override
     public String getType(@NonNull Uri uri) {
         switch (sUriMatcher.match(uri)) {
-
             case CODE_ALL_FAVORITES_MOVIES:
                 return "ssssss";
             case CODE_FAVORITES_MOVIES_ID:
@@ -94,8 +93,10 @@ public class MoviesProvider extends ContentProvider {
         if (rowID > 0) {
             //Uri _uri = ContentUris.withAppendedId(MoviesContract.MoviesFavoritesEntry.CONTENT_URI, rowID);
             //getContext().getContentResolver().notifyChange(_uri, null);
+
             return Uri.parse(MoviesContract.MoviesFavoritesEntry.CONTENT_URI + "/" + rowID);
         }
+
         throw new SQLException("Failed to add a record into " + uri);
     }
 
@@ -120,6 +121,7 @@ public class MoviesProvider extends ContentProvider {
         }
 
         getContext().getContentResolver().notifyChange(uri, null);
+
         return count;
 
     }

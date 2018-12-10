@@ -1,5 +1,14 @@
 package com.example.e5813.movieapp.utils;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+
+import java.util.List;
+
 public class MovieUtils {
 
     private static final String URL_BASE = "http://image.tmdb.org/t/p/";
@@ -28,6 +37,7 @@ public class MovieUtils {
             return null;
     }
 
+
     /**
      * add "min" to duration
      * @param duration example "112"
@@ -53,5 +63,23 @@ public class MovieUtils {
                 return str[0];
         }
         return null;
+    }
+
+
+    public static void watchYoutubeVideo(Context context, String keyMovie){
+        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + keyMovie));
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            List<ResolveInfo> activities = packageManager.queryIntentActivities(appIntent, 0);
+            boolean isIntentSafe = activities.size() > 0;
+
+            // Start an activity if it's safe
+            if (isIntentSafe) {
+                context.startActivity(appIntent);
+            }
+            // context.startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            context.startActivity(appIntent);
+        }
     }
 }

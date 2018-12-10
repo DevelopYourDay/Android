@@ -1,12 +1,8 @@
 package com.example.e5813.movieapp.activities;
 
-import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,22 +15,22 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.e5813.movieapp.R;
-import com.example.e5813.movieapp.data.MoviesContract;
+import com.example.e5813.movieapp.localData.MoviesAcessLocalDb;
+import com.example.e5813.movieapp.localData.MoviesContract;
 import com.example.e5813.movieapp.models.movies.MovieDetail;
 import com.example.e5813.movieapp.models.movies.Movie;
 import com.example.e5813.movieapp.models.movies.MovieReview;
 import com.example.e5813.movieapp.models.movies.MovieTrailler;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.ConnectivityReceiver;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.MyApplication;
-import com.example.e5813.movieapp.networks.tmdb.movies.FetchingMovie;
-import com.example.e5813.movieapp.networks.tmdb.movies.MovieRepository;
-import com.example.e5813.movieapp.networks.tmdb.interfaces.GetDetailsFromMovie;
-
-import com.example.e5813.movieapp.networks.tmdb.interfaces.TmdbApiService;
 import com.example.e5813.movieapp.networks.tmdb.TmdbClientInstance;
+import com.example.e5813.movieapp.networks.tmdb.interfaces.GetDetailsFromMovie;
+import com.example.e5813.movieapp.networks.tmdb.interfaces.TmdbApiService;
+import com.example.e5813.movieapp.networks.tmdb.movies.FetchingMovie;
+
+import com.example.e5813.movieapp.networks.tmdb.movies.MovieRepository;
 import com.example.e5813.movieapp.utils.MovieUtils;
 import com.example.e5813.movieapp.utils.MoviesDatesUtils;
 import com.example.e5813.movieapp.views.adapter.MovieDetailsReviewsAdapter;
@@ -43,7 +39,6 @@ import com.example.e5813.movieapp.views.notifications.Toasts;
 import com.squareup.picasso.Picasso;
 
 import java.util.LinkedList;
-import java.util.List;
 
 public class MovieDetails extends AppCompatActivity  implements ConnectivityReceiver.ConnectivityReceiverListener,
         MovieDetailsTrailerAdapter.MovieDetailsTrailerAdapterOnClickHandler,
@@ -70,6 +65,8 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
     private LinearLayoutManager mLinearLayoutManagerTrailers;
     private LinearLayoutManager mLinearLayoutManagerReviews;
 
+    private boolean movieIsPresentInFavoriteListOnLocalDB = false;
+
     private MovieDetailsTrailerAdapter mMovieDetailsTrailerAdapter;
     private MovieDetailsReviewsAdapter mMovieDetailsReviewsAdapter;
 
@@ -90,7 +87,9 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
             if (IntentListMovies.hasExtra(MovieList.PARCEL_MOVIE_ID)) {
                 fetchingMovie =  new FetchingMovie();
                 mIdMovie = (Movie)IntentListMovies.getSerializableExtra(MovieList.PARCEL_MOVIE_ID);
+                movieIsPresentInFavoriteListOnLocalDB = MoviesAcessLocalDb.IsPresentInFavoriteList(mIdMovie.getId(),this);
                 loadViews();
+                isConnected(ConnectivityReceiver.isConnected());
             }
         }
     }
@@ -110,7 +109,7 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mRating = (TextView) mViewMovieInformation.findViewById(R.id.tv_movie_rating);
         mCover = (ImageView) mViewMovieInformation.findViewById(R.id.img_details_movie_cover);
         mBtAddFavorites = (ImageView) mViewMovieInformation.findViewById(R.id.img_details_movie_mark_favorite);
-        loadBtnAddFavoritesActions(mBtAddFavorites);
+        actionBtnAddMovieFavoriteList(mBtAddFavorites);
         defineIconBtnFavorite(mIdMovie.getId());
 
         mRecyclerViewTrailers = (RecyclerView) mViewTrailers.findViewById(R.id.rv_list_trailers);
@@ -130,7 +129,6 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mRecyclerViewTrailers.setAdapter(mMovieDetailsTrailerAdapter);
 
 
-
         // adapter and viewHolder para os trailers
         mLinearLayoutManagerReviews = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerViewsReviews.setLayoutManager(mLinearLayoutManagerReviews);
@@ -143,15 +141,15 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mRecyclerViewsReviews.addItemDecoration(dividerItemDecorationReviews);
         mRecyclerViewsReviews.setAdapter(mMovieDetailsReviewsAdapter);
 
+
     }
 
-
-    private void loadBtnAddFavoritesActions(final ImageView mBtnAddFavorites){
+    private void actionBtnAddMovieFavoriteList(final ImageView mBtnAddFavorites){
         mBtnAddFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(mBtnAddFavorites.getBackground() == getResources().getDrawable(R.drawable.ic_star,null)) {
-                    //remove here
+                if(movieIsPresentInFavoriteListOnLocalDB) {
+                    removeMovieFavoriteList();
                     mBtnAddFavorites.setBackgroundResource(R.drawable.ic_best);
                 }else{
                     addMovieToFavoriteList();
@@ -162,10 +160,9 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
 
     }
 
-
     private void defineIconBtnFavorite(int idMovie){
+        if(movieIsPresentInFavoriteListOnLocalDB){
 
-        if(MovieIsPresentInFavoriteList(idMovie)){
             mBtAddFavorites.setBackgroundResource(R.drawable.ic_star);
         }else{
             mBtAddFavorites.setBackgroundResource(R.drawable.ic_best);
@@ -173,9 +170,6 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
 
     }
 
-    private void removeMovieFromFavoriteList(int idMovie){
-
-    }
 
     private void addMovieToFavoriteList(){
         Uri mNewUri;
@@ -187,27 +181,15 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_TITLE, mTitle.getText().toString());
         mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_URL_IMAGE, mIdMovie.getUrlImage());
         mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_YEAR, mYear.getText().toString());
+        mNewValues.put(MoviesContract.MoviesFavoritesEntry.COLUMN_DESCRIPTION, mDescription.getText().toString());
 
         mNewUri = getContentResolver().insert(MoviesContract.MoviesFavoritesEntry.CONTENT_URI, mNewValues);
     }
 
-    private boolean MovieIsPresentInFavoriteList(int idMovie){
-        Cursor mCursor;
-        String[] mProjection = {"*"};
+    private void removeMovieFavoriteList(){
+        int count = MoviesAcessLocalDb.removeMovieFromFavoriteList(mIdMovie.getId(),this);
 
-        String mSelectionClause = MoviesContract.MoviesFavoritesEntry.COLUMN_MOVIE_ID + " = ?";
-
-       String[]  mSelectionArgs = {Integer.toString(idMovie)};
-
-        mCursor = getContentResolver().query(MoviesContract.MoviesFavoritesEntry.buildMovieUriWithIDMovie(idMovie), mProjection,
-                mSelectionClause, mSelectionArgs, null);
-
-        if (mCursor.getCount() >= 1) {
-            return true;
-        }
-            return false;
     }
-
 
 
     private void setInformationToViews(MovieDetail mMovie){
@@ -216,6 +198,15 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         mDuration.setText(MovieUtils.getDurationInMinutes(mMovie.getDuration()));
         mDescription.setText(mMovie.getDescription());
         mRating.setText(MovieUtils.convertRatingPercentage(mMovie.getRating()));
+        Picasso.get().load(MovieUtils.getFullUrlImage(mMovie.getUtlImage())).into(mCover);
+    }
+
+    private void setInformationToViewsOFFLINEMODE(MovieDetail mMovie){
+        mTitle.setText(mMovie.getTitle());
+        mYear.setText(mMovie.getYear());
+        mDuration.setText(mMovie.getDuration());
+        mDescription.setText(mMovie.getDescription());
+        mRating.setText(mMovie.getRating());
         Picasso.get().load(MovieUtils.getFullUrlImage(mMovie.getUtlImage())).into(mCover);
     }
 
@@ -234,20 +225,43 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        isConnected(ConnectivityReceiver.isConnected());
+        isConnected(isConnected);
     }
 
     private void isConnected(boolean isConnected){
         if(isConnected){
             hiddeViewNoInternetConnection();
-            setInformationToViews(fetchingMovie.getMovieDetails(mIdMovie.getId()));
-            //getTrailers(mIdMovie.getId());
-            //getReviews(mIdMovie.getId());
-            showAllViews();
+            //fetchingMovie.setMovieDetailsToView(mIdMovie.getId(),this);
+            setMovieDetails(mIdMovie.getId(), this);
+            fetchingMovie.setReviewsFromMovieToAdapter(mIdMovie.getId(), mMovieDetailsReviewsAdapter, this);
+            fetchingMovie.setTrailersFromMovieToAdapter(mIdMovie.getId(),mMovieDetailsTrailerAdapter, this);
+            showViewsWithInternet();
         }else{
-            hideAllViews();
-            showViewNoInternetConnection();
+            if(movieIsPresentInFavoriteListOnLocalDB){
+                hiddeViewNoInternetConnection();
+                MovieDetail movieDetail = MoviesAcessLocalDb.getMovieDetail(mIdMovie.getId(), this);
+                setInformationToViewsOFFLINEMODE(movieDetail);
+                showViewsWithNoInternet();
+            }else {
+                hideAllViews();
+                showViewNoInternetConnection();
+            }
         }
+    }
+
+    private void setMovieDetails(int idMovie, final Context context){
+        TmdbApiService api = TmdbClientInstance.getRetrofitInstanceWithObserver().create(TmdbApiService.class);
+        MovieRepository.getDetailsFromMovie(api, idMovie, new GetDetailsFromMovie() {
+            @Override
+            public void onSuccess(MovieDetail movieDetail) {
+                setInformationToViews(movieDetail);
+
+            }
+            @Override
+            public void onError() {
+                Toasts.NoInternetConnectionToast(context);
+            }
+        });
     }
 
    private void hideAllViews(){
@@ -256,10 +270,16 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
          mViewReviews.setVisibility(View.INVISIBLE);
    }
 
-   private void showAllViews(){
+   private void showViewsWithInternet(){
         mViewMovieInformation.setVisibility(View.VISIBLE);
         mViewTrailers.setVisibility(View.VISIBLE);
         mViewReviews.setVisibility(View.VISIBLE);
+    }
+
+    private void showViewsWithNoInternet(){
+        mViewMovieInformation.setVisibility(View.VISIBLE);
+        mViewTrailers.setVisibility(View.INVISIBLE);
+        mViewReviews.setVisibility(View.INVISIBLE);
     }
 
    private void showViewNoInternetConnection(){
@@ -288,6 +308,9 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
             case R.id.refres:
                 isConnected(ConnectivityReceiver.isConnected());
                 return true;
+            case R.id.home:
+                onBackPressed();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -295,7 +318,7 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
 
     @Override
     public void onClickTrailer(int id) {
-        watchYoutubeVideo(this,mMovieDetailsTrailerAdapter.getTrailerFromList(id).getKey());
+        MovieUtils.watchYoutubeVideo(this,mMovieDetailsTrailerAdapter.getTrailerFromList(id).getKey());
     }
 
     @Override
@@ -303,20 +326,4 @@ public class MovieDetails extends AppCompatActivity  implements ConnectivityRece
         // handler action here
     }
 
-    public static void watchYoutubeVideo(Context context, String id){
-        Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + id));
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            List<ResolveInfo> activities = packageManager.queryIntentActivities(appIntent, 0);
-            boolean isIntentSafe = activities.size() > 0;
-
-            // Start an activity if it's safe
-            if (isIntentSafe) {
-                context.startActivity(appIntent);
-            }
-           // context.startActivity(appIntent);
-        } catch (ActivityNotFoundException ex) {
-            context.startActivity(appIntent);
-        }
-    }
 }

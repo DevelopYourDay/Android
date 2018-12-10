@@ -2,6 +2,7 @@ package com.example.e5813.movieapp.networks.tmdb.movies;
 
 import android.content.Context;
 
+import com.example.e5813.movieapp.activities.MovieDetails;
 import com.example.e5813.movieapp.models.movies.Movie;
 import com.example.e5813.movieapp.models.movies.MovieDetail;
 import com.example.e5813.movieapp.models.movies.MovieReview;
@@ -18,12 +19,13 @@ import com.example.e5813.movieapp.views.adapter.MovieDetailsReviewsAdapter;
 import com.example.e5813.movieapp.views.adapter.MovieDetailsTrailerAdapter;
 import com.example.e5813.movieapp.views.notifications.Toasts;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Ricardo on 08/12/2018
  */
-public class FetchingMovie {
+public class FetchingMovie{
 
     /**
      * flag that we will use to determine if we are currently fetching the next page.
@@ -38,9 +40,14 @@ public class FetchingMovie {
      */
     private int currentPage;
 
+
+
+    private static FetchingMovie INSTANCE = null;
+
     public FetchingMovie(boolean isFetchingMovies, int currentPage) {
         this.isFetchingMovies = isFetchingMovies;
         this.currentPage = currentPage;
+
     }
 
     public FetchingMovie() {
@@ -54,6 +61,7 @@ public class FetchingMovie {
         return currentPage;
     }
 
+
     public void setFetchingMovies(boolean fetchingMovies) {
         isFetchingMovies = fetchingMovies;
     }
@@ -62,8 +70,7 @@ public class FetchingMovie {
         this.currentPage = currentPage;
     }
 
-
-    public void getPopularMovies(final MovieAdapter adapter, final Context context) {
+    public void setPopularMoviesToAdapter(final MovieAdapter adapter, final Context context) {
         isFetchingMovies = true;
         final TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
         MovieRepository.getPopularMovies(api, currentPage, new GetPopularMovies() {
@@ -84,7 +91,7 @@ public class FetchingMovie {
     /**
      * Fetech moveis sorted by Top Rated
      */
-    public void getTopRatedMovies(final MovieAdapter adapter, final Context context) {
+    public void setTopRatedMoviesToAdapter(final MovieAdapter adapter, final Context context) {
         isFetchingMovies = true;
         TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
         MovieRepository.getTopRatedMovies(api, currentPage, new GetTopRatedMovies() {
@@ -102,7 +109,7 @@ public class FetchingMovie {
         });
     }
 
-    private void getTrailersFromMovie(int movieID, final MovieDetailsTrailerAdapter adapter, final Context context) {
+    public void setTrailersFromMovieToAdapter(int movieID, final MovieDetailsTrailerAdapter adapter, final Context context) {
         TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
         MovieRepository.getTrailersFromMovies(api, movieID, new GetTraillersFromMovie() {
             @Override
@@ -117,15 +124,13 @@ public class FetchingMovie {
         });
     }
 
-
-    private void getReviewsFromMovie(int movieID, final MovieDetailsReviewsAdapter adapter, final Context context) {
+    public void setReviewsFromMovieToAdapter(int movieID, final MovieDetailsReviewsAdapter adapter, final Context context) {
         TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
         MovieRepository.getReviewsFromMovie(api, movieID, new GetReviewsFromMovie() {
             @Override
             public void onSuccess(List<MovieReview> movieReviews) {
                 adapter.appendReviews(movieReviews);
             }
-
             @Override
             public void onError() {
                 Toasts.NoInternetConnectionToast(context);
@@ -133,23 +138,19 @@ public class FetchingMovie {
         });
     }
 
-
-    private void  getMovieDetails(int idMovie,final Context context){
-        TmdbApiService api = TmdbClientInstance.getRetrofitInstance().create(TmdbApiService.class);
-         MovieDetail m;
-        MovieRepository.getDetailsFromMovie(api, idMovie, new GetDetailsFromMovie() {
+    public void setMovieDetailsToView(int movieID, final Context context) {
+        TmdbApiService api = TmdbClientInstance.getRetrofitInstanceWithObserver().create(TmdbApiService.class);
+        MovieRepository.getDetailsFromMovie(api, movieID, new GetDetailsFromMovie() {
             @Override
-            public void onError() {
+            public void onSuccess(MovieDetail movieDetail) {
+
 
             }
-
             @Override
-            public void onSuccess(MovieDetail movieDetails) {
-
+            public void onError() {
+                Toasts.NoInternetConnectionToast(context);
             }
         });
     }
-
-
 
 }

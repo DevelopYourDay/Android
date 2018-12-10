@@ -39,7 +39,7 @@
         </receiver>
 
         <provider
-            android:name=".data.MoviesProvider"
+            android:name=".localData.MoviesProvider"
             android:authorities="@string/content_authority"
             android:exported="false"/>
 

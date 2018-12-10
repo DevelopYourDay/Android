@@ -16,7 +16,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.example.e5813.movieapp.R;
-import com.example.e5813.movieapp.data.MoviesContract;
+import com.example.e5813.movieapp.localData.MoviesContract;
 import com.example.e5813.movieapp.models.movies.Movie;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.ConnectivityReceiver;
 import com.example.e5813.movieapp.networks.InternetCheckConnection.MyApplication;
@@ -99,7 +99,7 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                isConnected(ConnectivityReceiver.isConnected());
+               // isConnected(ConnectivityReceiver.isConnected());
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         });
@@ -114,12 +114,12 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
     @Override
     protected void onStart() {
         super.onStart();
-        isConnected(ConnectivityReceiver.isConnected());
+       //isConnected(ConnectivityReceiver.isConnected());
     }
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        isConnected(ConnectivityReceiver.isConnected());
+        //isConnected(ConnectivityReceiver.isConnected());
     }
 
     private void isConnected(boolean isConnected) {
@@ -130,7 +130,10 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
             showMovieDataView();
         } else {
             if(getPredefinedTypeSearchMovie().equals(MOVIES_FAVORITES)){
+                hideViewNoInternetConnection();
+                showLoading();
                 addMoviesToAdapter(getPredefinedTypeSearchMovie());
+                showMovieDataView();
             }else{
                 hideProgressBarAndRv();
                 showViewNoInternetConnection();
@@ -142,10 +145,10 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
     private void addMoviesToAdapter(String type) {
         switch (type) {
             case MOVIES_POPULAR:
-                fetchingMovies.getPopularMovies(mMovieAdapter, this);
+                fetchingMovies.setPopularMoviesToAdapter(mMovieAdapter, this);
                 break;
             case MOVIES_TOP_RATED:
-                fetchingMovies.getTopRatedMovies(mMovieAdapter, this);
+                fetchingMovies.setTopRatedMoviesToAdapter(mMovieAdapter, this);
                 break;
             case MOVIES_FAVORITES:
                 getMoviesFavorites();
@@ -224,7 +227,7 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
                     case R.id.favorites:
                         setPredefinedTypeSearchMovie(MOVIES_FAVORITES);
                         mMovieAdapter.cleanMovies();
-                        getMoviesFavorites();
+                        isConnected(ConnectivityReceiver.isConnected());
                         return true;
                     default:
                         return false;
@@ -284,6 +287,7 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
 
+                if(!getPredefinedTypeSearchMovie().equals(MOVIES_FAVORITES)){
                     int totalItemCount = layoutManager.getItemCount();
                     int visibleItemCount = layoutManager.getChildCount();
                     int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
@@ -291,13 +295,15 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
                     if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
                         if (!fetchingMovies.getFetchingMovies()) {
                             fetchingMovies.setCurrentPage((fetchingMovies.getCurrentPage()+1));
-                            isConnected(ConnectivityReceiver.isConnected());
+                           isConnected(ConnectivityReceiver.isConnected());
                         }
                     }
+                 }
             }
         });
     }
 
+    /**
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -319,6 +325,6 @@ public class MovieList extends AppCompatActivity implements MovieAdapter.MoviesA
         }
 
     }
-
+**/
 
 }

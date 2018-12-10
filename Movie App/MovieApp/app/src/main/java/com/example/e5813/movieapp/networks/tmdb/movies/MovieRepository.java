@@ -2,10 +2,12 @@ package com.example.e5813.movieapp.networks.tmdb.movies;
 
 import android.support.annotation.NonNull;
 
+import com.example.e5813.movieapp.activities.MovieDetails;
 import com.example.e5813.movieapp.models.movies.MovieDetail;
 import com.example.e5813.movieapp.models.movies.responses.MovieReviewsResponse;
 import com.example.e5813.movieapp.models.movies.responses.MovieTrailersResponse;
 import com.example.e5813.movieapp.models.movies.responses.MoviesResponse;
+import com.example.e5813.movieapp.networks.tmdb.TmdbClientInstance;
 import com.example.e5813.movieapp.networks.tmdb.interfaces.GetDetailsFromMovie;
 import com.example.e5813.movieapp.networks.tmdb.interfaces.GetReviewsFromMovie;
 import com.example.e5813.movieapp.networks.tmdb.interfaces.GetTopRatedMovies;
@@ -14,6 +16,11 @@ import com.example.e5813.movieapp.networks.tmdb.interfaces.GetTraillersFromMovie
 import com.example.e5813.movieapp.networks.tmdb.interfaces.TmdbApiService;
 
 
+import java.io.IOException;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -114,7 +121,7 @@ public class MovieRepository {
     }
 
     public static void getTrailersFromMovies(TmdbApiService api,int idMovie,final GetTraillersFromMovie callback) {
-        api.GetTraillersFromMovie(idMovie,API_KEY, LANGUAGE).enqueue(new Callback<MovieTrailersResponse>() {
+        api.GetTrailersFromMovie(idMovie,API_KEY, LANGUAGE).enqueue(new Callback<MovieTrailersResponse>() {
             @Override
             public void onResponse(@NonNull Call<MovieTrailersResponse> call, @NonNull Response<MovieTrailersResponse> response) {
                 if (response.isSuccessful()) {
@@ -134,6 +141,11 @@ public class MovieRepository {
             }
         });
     }
+
+
+
+
+
 
 
 }
