@@ -1,77 +1,93 @@
 package com.example.ricardo.ricardomvvm.viewmodel;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.databinding.BindingAdapter;
+import android.databinding.BindingMethod;
 import android.databinding.ObservableInt;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Toast;
 
-import com.example.ricardo.ricardomvvm.MovieApplication;
-import com.example.ricardo.ricardomvvm.data.MovieService;
-import com.example.ricardo.ricardomvvm.data.MoviesFactory;
+import com.example.ricardo.ricardomvvm.data.remote.MovieRepository;
+import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.GetPopularMovies;
 import com.example.ricardo.ricardomvvm.model.Movie;
-import com.example.ricardo.ricardomvvm.model.MoviesResponse;
+import com.example.ricardo.ricardomvvm.view.notifications.Toasts;
+import com.example.ricardo.ricardomvvm.databinding.MovieMainBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 /**
  * Created by Ricardo on 10/12/2018
  */
-public class MovieViewModel  extends Observable {
-    public ObservableInt peopleProgress;
-    public ObservableInt peopleRecycler;
+public class MovieViewModel extends Observable {
+
+    private static final int DEFAULT_VALUE_FROM_PAGE_REQUEST = 1;
+    private static final boolean DEFAULT_VALUE_FROM_FETECHING_MOVIES_REQUEST = false;
+
+    public ObservableInt movieProgress;
+    public ObservableInt movieRecycler;
     public ObservableInt viewNoInternetConnection;
 
     private List<Movie> movieList;
     private Context context;
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private Cursor mCursor;
+
+
+    private boolean isFetchingMovies;
+    private int currentPage;
+
+
+    private static  CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+   // private ActivityMainBinding movieActivityBinding;
 
 
     public MovieViewModel(Context context) {
-        this.peopleProgress = new ObservableInt(View.VISIBLE);
-        this.peopleRecycler =  new ObservableInt(View.GONE);
+        this.movieProgress = new ObservableInt(View.VISIBLE);
+        this.movieRecycler = new ObservableInt(View.GONE);
         this.viewNoInternetConnection = new ObservableInt(View.GONE);
         this.movieList = new ArrayList<>();
         this.context = context;
+        initializeAttributes();
+        initializeViews();
+        fetchPopularMoviesList();
+
     }
 
-    public void onclickFabLoad (View view){
-        initializeViews();
-        fetchMovieList();
+    public void initializeAttributes() {
+        isFetchingMovies = false;
+        currentPage = DEFAULT_VALUE_FROM_PAGE_REQUEST;
     }
 
     public void initializeViews() {
-        peopleRecycler.set(View.GONE);
-        peopleProgress.set(View.VISIBLE);
+        movieRecycler.set(View.GONE);
+        movieProgress.set(View.VISIBLE);
     }
 
-    private void fetchMovieList() {
+    private void fetchPopularMoviesList() {
+        isFetchingMovies = true;
+        MovieRepository.getPopularMovies(context, compositeDisposable,currentPage, new GetPopularMovies() {
+            @Override
+            public void onSuccess(int page, List<Movie> movies) {
+                changeMovieDataSet(movies);
+                currentPage = page;
+                isFetchingMovies = false;
+                movieProgress.set(View.GONE);
+                movieRecycler.set(View.VISIBLE);
+            }
 
-        MovieApplication movieApplication = MovieApplication.create(context);
-        MovieService movieService = movieApplication.getMovieService();
-
-        Disposable disposable = movieService.GetPopularMovies(MoviesFactory.API_KEY,MoviesFactory.LANGUAGE,1)
-                .subscribeOn(movieApplication.subscribeScheduler())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<MoviesResponse>() {
-                    @Override public void accept(MoviesResponse moviesResponse) {
-                        changeMovieDataSet(moviesResponse.getMovies());
-                        peopleProgress.set(View.GONE);
-                        peopleRecycler.set(View.VISIBLE);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override public void accept(Throwable throwable) {
-                        peopleProgress.set(View.GONE);
-                        peopleRecycler.set(View.GONE);
-                    }
-                });
-
-        compositeDisposable.add(disposable);
+            @Override
+            public void onError() {
+                Toast toast = Toasts.createToastNoInternetConnection(context);
+                toast.show();
+            }
+        });
     }
 
     private void changeMovieDataSet(List<Movie> Movies) {
@@ -80,7 +96,7 @@ public class MovieViewModel  extends Observable {
         notifyObservers();
     }
 
-    public List<Movie> getPeopleList() {
+    public List<Movie> getMovieList() {
         return movieList;
     }
 
@@ -95,4 +111,27 @@ public class MovieViewModel  extends Observable {
         compositeDisposable = null;
         context = null;
     }
+
+    @BindingAdapter({"android:onScroll"})
+    public void onScroll(View view) {
+      /** // if (!getPredefinedTypeSearchMovie().equals(MOVIES_FAVORITES)) {
+
+            if (movieActivityBinding.rvListMovies.getLayoutManager() instanceof GridLayoutManager) {
+
+                GridLayoutManager layoutManager = (GridLayoutManager) movieActivityBinding.rvListMovies.getLayoutManager();
+                int totalItemCount = layoutManager.getItemCount();
+                int visibleItemCount = layoutManager.getChildCount();
+                int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+
+                if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
+                    if (!isFetchingMovies) {
+                        currentPage++;
+                       //handler where call fetch movies
+                        fetchPopularMoviesList();
+                    }
+                }
+            }
+        //}**/
+    }
+
 }

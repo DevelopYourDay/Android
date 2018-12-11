@@ -1,4 +1,4 @@
-package com.example.ricardo.ricardomvvm;
+package com.example.ricardo.ricardomvvm.Utils;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;

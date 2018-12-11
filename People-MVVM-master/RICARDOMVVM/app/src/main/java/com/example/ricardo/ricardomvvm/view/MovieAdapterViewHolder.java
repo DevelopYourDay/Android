@@ -4,32 +4,27 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+import com.example.ricardo.ricardomvvm.databinding.MovieListItemBinding;
+import com.example.ricardo.ricardomvvm.model.Movie;
+import com.example.ricardo.ricardomvvm.viewmodel.ItemMovieViewModel;
 
-public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
 
-    public final ImageView movieCoverImage;
-    ItemMovieBinding mItemMovieBinding;
-final private MovieAdapter.MoviesAdapterOnClickHandler mClickHandler;
+    MovieListItemBinding mItemMovieBinding;
 
-    /**
-     *Um ViewHolder descreve uma visão de item e metadados sobre seu lugar dentro do RecyclerView.
-     * @param itemView
-     * @param handler
-     */
-    public MovieAdapterViewHolder(ItemPeopleBinding itemPeopleBinding) {
-        super(itemPeopleBinding.itemMovie);
-        mItemMovieBinding =itemPeopleBinding;
-        itemView.setOnClickListener(this);
+
+    public MovieAdapterViewHolder(MovieListItemBinding itemMovieBinding) {
+        super(itemMovieBinding.getRoot());
+        mItemMovieBinding = itemMovieBinding;
     }
 
-    /**
-     * Usado pelas childs views durante o click
-     * @param v
-     */
 
-    @Override
-    public void onClick(View v) {
-        int adatpterPosition = getAdapterPosition();
-        mClickHandler.onClick(adatpterPosition );
+    void bindMovie(Movie movie) {
+        if (mItemMovieBinding.getMovieItemViewModel() == null) {
+            mItemMovieBinding.setMovieItemViewModel(
+                    new ItemMovieViewModel(movie, itemView.getContext()));
+        } else {
+            mItemMovieBinding.getMovieItemViewModel().setMovie(movie);
+        }
     }
 }

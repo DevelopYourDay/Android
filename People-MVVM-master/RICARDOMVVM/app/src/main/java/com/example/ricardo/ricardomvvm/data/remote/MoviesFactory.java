@@ -1,4 +1,4 @@
-package com.example.ricardo.ricardomvvm.data;
+package com.example.ricardo.ricardomvvm.data.remote;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -14,7 +14,7 @@ public class MoviesFactory {
 
     public static MovieService create() {
         if (retrofit == null) {
-            retrofit = new Retrofit.Builder()
+            retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(TMDB_BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

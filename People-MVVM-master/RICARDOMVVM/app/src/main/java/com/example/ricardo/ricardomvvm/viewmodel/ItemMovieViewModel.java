@@ -6,7 +6,7 @@ import android.databinding.BindingAdapter;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.example.ricardo.ricardomvvm.MovieUtils;
+import com.example.ricardo.ricardomvvm.Utils.MovieUtils;
 import com.example.ricardo.ricardomvvm.model.Movie;
 import com.squareup.picasso.Picasso;
 
