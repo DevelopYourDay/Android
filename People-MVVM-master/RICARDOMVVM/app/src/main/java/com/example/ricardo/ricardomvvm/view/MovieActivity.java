@@ -27,10 +27,10 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
 
 
     public static final String PREFS_NAME_FILE = "MyPrefsFile";
-    private static final String MOVIES_POPULAR = "MOVIES_POPULAR";
-    private static final String MOVIES_TOP_RATED = "MOVIES_TOP_RATED";
-    private static final String MOVIES_FAVORITES = "MOVIES_FAVORITES";
-    private static final String PREFS_MOVIE_TYPE_KEY = "MOVIE_";
+    public static final String MOVIES_POPULAR = "MOVIES_POPULAR";
+    public static final String MOVIES_TOP_RATED = "MOVIES_TOP_RATED";
+    public static final String MOVIES_FAVORITES = "MOVIES_FAVORITES";
+    public static final String PREFS_MOVIE_TYPE_KEY = "MOVIE_";
     public static final String PREFS_SORT_MOVIE_DEFAULT = MOVIES_POPULAR;
 
 
@@ -99,13 +99,19 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.popular:
-                        startActivityActionView();
+                        setNewPreference(MOVIES_POPULAR);
+                        setupListMovieView(movieActivityBinding.rvListMovies);
+                        movieActivityBinding.getMovieViewModel().initializeAttributes();
+                        movieActivityBinding.getMovieViewModel().fetchData();
                         return true;
                     case R.id.top_rated:
-
+                        setNewPreference(MOVIES_TOP_RATED);
+                        setupListMovieView(movieActivityBinding.rvListMovies);
+                        movieActivityBinding.getMovieViewModel().initializeAttributes();
+                        movieActivityBinding.getMovieViewModel().fetchData();
                         return true;
                     case R.id.favorites:
-
+                            //HANDLER WHERE
                         return true;
                     default:
                         return false;
@@ -124,7 +130,7 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
         if (observable instanceof MovieViewModel) {
             MovieAdapter movieAdapter = (MovieAdapter) movieActivityBinding.rvListMovies.getAdapter();
             MovieViewModel movieViewModel = (MovieViewModel) observable;
-            movieAdapter.appendMovies(movieViewModel.getMovieList());
+            movieAdapter.update(movieViewModel.getMovieList());
         }
     }
 
@@ -136,7 +142,7 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
             setupListMovieView(movieActivityBinding.rvListMovies);
             setupObserver(movieViewModel);
         }else{
-                // handler
+            //HANDLER WHERE
         }
     }
 }

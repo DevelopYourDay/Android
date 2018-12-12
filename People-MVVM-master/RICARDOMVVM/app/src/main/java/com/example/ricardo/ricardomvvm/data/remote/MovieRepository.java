@@ -39,4 +39,23 @@ public class MovieRepository {
                 });
         compositeDisposable.add(disposable);
     }
+
+    public static void getTopRatedMovies(Context context, CompositeDisposable compositeDisposable,int page, final GetTopRatedMovies callback) {
+
+        MovieApplication movieApplication = MovieApplication.create(context);
+        MovieService movieService = movieApplication.getMovieService();
+        Disposable disposable = movieService.GetTopRatedMovies(API_KEY,LANGUAGE,page)
+                .subscribeOn(movieApplication.subscribeScheduler())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<MoviesResponse>() {
+                    @Override public void accept(MoviesResponse moviesResponse) {
+                        callback.onSuccess(moviesResponse.page, moviesResponse.getMovies());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override public void accept(Throwable throwable) {
+                        callback.onError();
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
 }

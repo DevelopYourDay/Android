@@ -1,9 +1,9 @@
 package com.example.ricardo.ricardomvvm.viewmodel;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.databinding.BindingAdapter;
-import android.databinding.BindingMethod;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +12,9 @@ import android.widget.Toast;
 
 import com.example.ricardo.ricardomvvm.data.remote.MovieRepository;
 import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.GetPopularMovies;
+import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.GetTopRatedMovies;
 import com.example.ricardo.ricardomvvm.model.Movie;
+import com.example.ricardo.ricardomvvm.view.MovieActivity;
 import com.example.ricardo.ricardomvvm.view.notifications.Toasts;
 import com.example.ricardo.ricardomvvm.databinding.MovieMainBinding;
 
@@ -22,9 +24,14 @@ import java.util.Observable;
 
 import io.reactivex.disposables.CompositeDisposable;
 
+import static com.example.ricardo.ricardomvvm.view.MovieActivity.PREFS_MOVIE_TYPE_KEY;
+import static com.example.ricardo.ricardomvvm.view.MovieActivity.PREFS_NAME_FILE;
+import static com.example.ricardo.ricardomvvm.view.MovieActivity.PREFS_SORT_MOVIE_DEFAULT;
+
 /**
  * Created by Ricardo on 10/12/2018
  */
+
 public class MovieViewModel extends Observable {
 
     private static final int DEFAULT_VALUE_FROM_PAGE_REQUEST = 1;
@@ -33,7 +40,7 @@ public class MovieViewModel extends Observable {
     public ObservableInt movieProgress;
     public ObservableInt movieRecycler;
     public ObservableInt viewNoInternetConnection;
-
+    public ObservableBoolean isLoading;
     private List<Movie> movieList;
     private Context context;
     private Cursor mCursor;
@@ -43,26 +50,41 @@ public class MovieViewModel extends Observable {
     private int currentPage;
 
 
-    private static  CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private static CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-   // private ActivityMainBinding movieActivityBinding;
+     private MovieMainBinding movieActivityBinding;
 
 
     public MovieViewModel(Context context) {
         this.movieProgress = new ObservableInt(View.VISIBLE);
         this.movieRecycler = new ObservableInt(View.GONE);
+        this.isLoading = new ObservableBoolean();
         this.viewNoInternetConnection = new ObservableInt(View.GONE);
         this.movieList = new ArrayList<>();
         this.context = context;
         initializeAttributes();
         initializeViews();
-        fetchPopularMoviesList();
+        fetchData();
+    }
 
+
+    public void fetchData() {
+        switch (getPredefinedTypeSearchMovie()){
+            case MovieActivity.MOVIES_POPULAR:
+                fetchPopularMoviesList();
+                break;
+            case MovieActivity.MOVIES_TOP_RATED:
+                fetchTopRatedMoviesList();
+                break;
+            default:
+                break;
+        }
     }
 
     public void initializeAttributes() {
         isFetchingMovies = false;
         currentPage = DEFAULT_VALUE_FROM_PAGE_REQUEST;
+        movieList.clear();
     }
 
     public void initializeViews() {
@@ -72,7 +94,27 @@ public class MovieViewModel extends Observable {
 
     private void fetchPopularMoviesList() {
         isFetchingMovies = true;
-        MovieRepository.getPopularMovies(context, compositeDisposable,currentPage, new GetPopularMovies() {
+        MovieRepository.getPopularMovies(context, compositeDisposable, currentPage, new GetPopularMovies() {
+            @Override
+            public void onSuccess(int page, List<Movie> movies) {
+                changeMovieDataSet(movies);
+                currentPage = page;
+                isFetchingMovies = false;
+                movieProgress.set(View.GONE);
+                movieRecycler.set(View.VISIBLE);
+            }
+
+            @Override
+            public void onError() {
+                Toast toast = Toasts.createToastNoInternetConnection(context);
+                toast.show();
+            }
+        });
+    }
+
+    private void fetchTopRatedMoviesList() {
+        isFetchingMovies = true;
+        MovieRepository.getTopRatedMovies(context, compositeDisposable, currentPage, new GetTopRatedMovies() {
             @Override
             public void onSuccess(int page, List<Movie> movies) {
                 changeMovieDataSet(movies);
@@ -112,26 +154,37 @@ public class MovieViewModel extends Observable {
         context = null;
     }
 
-    @BindingAdapter({"android:onScroll"})
-    public void onScroll(View view) {
-      /** // if (!getPredefinedTypeSearchMovie().equals(MOVIES_FAVORITES)) {
+    /**
+     * call refresh SwipeRefreshLayout
+     */
+    public void onRefresh() {
+        isLoading.set(true);
+        fetchPopularMoviesList();
+        isLoading.set(false);
+    }
 
-            if (movieActivityBinding.rvListMovies.getLayoutManager() instanceof GridLayoutManager) {
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
+            GridLayoutManager layoutManager = (GridLayoutManager) recyclerView.getLayoutManager();
+            int totalItemCount = layoutManager.getItemCount();
+            int visibleItemCount = layoutManager.getChildCount();
+            int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
 
-                GridLayoutManager layoutManager = (GridLayoutManager) movieActivityBinding.rvListMovies.getLayoutManager();
-                int totalItemCount = layoutManager.getItemCount();
-                int visibleItemCount = layoutManager.getChildCount();
-                int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-
-                if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
-                    if (!isFetchingMovies) {
-                        currentPage++;
-                       //handler where call fetch movies
-                        fetchPopularMoviesList();
-                    }
+            if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
+                if (!isFetchingMovies) {
+                    currentPage++;
+                    fetchData();
                 }
             }
-        //}**/
+        }
     }
+
+    private String getPredefinedTypeSearchMovie() {
+        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME_FILE , 0);
+        String moviePref = settings.getString(PREFS_MOVIE_TYPE_KEY, PREFS_SORT_MOVIE_DEFAULT);
+        return moviePref;
+    }
+
+
 
 }

@@ -26,6 +26,7 @@ public class ConnectivityReceiver extends BroadcastReceiver {
     }
 
 
+
     public static boolean isConnected() {
         ConnectivityManager
                 cm = (ConnectivityManager) MovieApplication.getInstance().getApplicationContext()

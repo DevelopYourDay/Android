@@ -7,16 +7,23 @@
         <variable
             name="movieViewModel"
             type="com.example.ricardo.ricardomvvm.viewmodel.MovieViewModel" />
+
+        <variable
+            name="sw"
+            type="android.support.v4.widget.SwipeRefreshLayout" />
+
     </data>
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:bin="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/swipe_movie_list_refresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:onRefreshListener="@{() -> movieViewModel.onRefresh()}"
+        app:refreshing="@{movieViewModel.isLoading}"
+        >
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -33,7 +40,7 @@
                 app:layout_constraintHorizontal_bias="1.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:onScroll="@{movieViewMode.}"
+                app:onScrolled="@{(rv, dx, dy) -> movieViewModel.onScrolled(rv,dx,dy)}"
                 app:layout_constraintVertical_bias="1.0" />
 
 

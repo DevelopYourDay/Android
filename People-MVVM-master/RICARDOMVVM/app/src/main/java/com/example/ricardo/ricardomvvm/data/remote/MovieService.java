@@ -21,7 +21,7 @@ public interface MovieService {
                                           @Query("language") String language);**/
 
     @GET("movie/top_rated")
-    Call<MoviesResponse> GetTopRatedMovies(@Query("api_key") String apiKey,
+    Observable<MoviesResponse> GetTopRatedMovies(@Query("api_key") String apiKey,
                                            @Query("language") String language,
                                            @Query("page") int page);
 
