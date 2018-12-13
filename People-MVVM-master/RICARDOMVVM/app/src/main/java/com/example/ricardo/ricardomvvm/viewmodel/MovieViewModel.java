@@ -5,15 +5,19 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
+import android.provider.Settings;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.ricardo.ricardomvvm.MovieApplication;
 import com.example.ricardo.ricardomvvm.data.remote.MovieRepository;
+import com.example.ricardo.ricardomvvm.data.remote.MovieService;
 import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.GetPopularMovies;
 import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.GetTopRatedMovies;
 import com.example.ricardo.ricardomvvm.model.Movie;
+import com.example.ricardo.ricardomvvm.model.MoviesResponse;
 import com.example.ricardo.ricardomvvm.view.MovieActivity;
 import com.example.ricardo.ricardomvvm.view.notifications.Toasts;
 import com.example.ricardo.ricardomvvm.databinding.MovieMainBinding;
@@ -22,7 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 import static com.example.ricardo.ricardomvvm.view.MovieActivity.PREFS_MOVIE_TYPE_KEY;
 import static com.example.ricardo.ricardomvvm.view.MovieActivity.PREFS_NAME_FILE;
@@ -50,9 +57,9 @@ public class MovieViewModel extends Observable {
     private int currentPage;
 
 
-    private static CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-     private MovieMainBinding movieActivityBinding;
+    private MovieMainBinding movieActivityBinding;
 
 
     public MovieViewModel(Context context) {
@@ -65,11 +72,12 @@ public class MovieViewModel extends Observable {
         initializeAttributes();
         initializeViews();
         fetchData();
+
     }
 
 
     public void fetchData() {
-        switch (getPredefinedTypeSearchMovie()){
+        switch (getPredefinedTypeSearchMovie()) {
             case MovieActivity.MOVIES_POPULAR:
                 fetchPopularMoviesList();
                 break;
@@ -81,10 +89,18 @@ public class MovieViewModel extends Observable {
         }
     }
 
+
+    public void onChangedTypeSearchMovie() {
+        initializeAttributes();
+        fetchData();
+    }
+
     public void initializeAttributes() {
         isFetchingMovies = false;
         currentPage = DEFAULT_VALUE_FROM_PAGE_REQUEST;
-        movieList.clear();
+        if (movieList.size() > 0) {
+            movieList.clear();
+        }
     }
 
     public void initializeViews() {
@@ -159,7 +175,7 @@ public class MovieViewModel extends Observable {
      */
     public void onRefresh() {
         isLoading.set(true);
-        fetchPopularMoviesList();
+        fetchData();
         isLoading.set(false);
     }
 
@@ -180,11 +196,10 @@ public class MovieViewModel extends Observable {
     }
 
     private String getPredefinedTypeSearchMovie() {
-        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME_FILE , 0);
+        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME_FILE, 0);
         String moviePref = settings.getString(PREFS_MOVIE_TYPE_KEY, PREFS_SORT_MOVIE_DEFAULT);
         return moviePref;
     }
-
 
 
 }

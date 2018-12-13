@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.ricardo.ricardomvvm.ConnectivityReceiver;
+import com.example.ricardo.ricardomvvm.MovieApplication;
 import com.example.ricardo.ricardomvvm.R;
 import com.example.ricardo.ricardomvvm.data.remote.MoviesFactory;
 import com.example.ricardo.ricardomvvm.databinding.MovieMainBinding;
@@ -38,11 +40,29 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_main);
-        initPreferences();
-        initDataBinding();
-        setupListMovieView(movieActivityBinding.rvListMovies);
-        setupObserver(movieViewModel);
+        //initialize();
     }
+
+
+    private void initialize(boolean isConnected) {
+        if(isConnected){
+           // setContentView(R.layout.movie_main);
+            initPreferences();
+            initDataBinding();
+            setupListMovieView(movieActivityBinding.rvListMovies);
+            setupObserver(movieViewModel);
+        }else{
+            setContentView(R.layout.toast_no_internet_connection);
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+       MovieApplication.getInstance().setConnectivityListener(this);
+    }
+
 
     private String initPreferences(){
         SharedPreferences settings = getSharedPreferences(PREFS_NAME_FILE, 0);
@@ -101,14 +121,12 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
                     case R.id.popular:
                         setNewPreference(MOVIES_POPULAR);
                         setupListMovieView(movieActivityBinding.rvListMovies);
-                        movieActivityBinding.getMovieViewModel().initializeAttributes();
-                        movieActivityBinding.getMovieViewModel().fetchData();
+                        movieActivityBinding.getMovieViewModel().onChangedTypeSearchMovie();
                         return true;
                     case R.id.top_rated:
                         setNewPreference(MOVIES_TOP_RATED);
                         setupListMovieView(movieActivityBinding.rvListMovies);
-                        movieActivityBinding.getMovieViewModel().initializeAttributes();
-                        movieActivityBinding.getMovieViewModel().fetchData();
+                        movieActivityBinding.getMovieViewModel().onChangedTypeSearchMovie();
                         return true;
                     case R.id.favorites:
                             //HANDLER WHERE
@@ -136,13 +154,8 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
-        if(isConnected){
-            initPreferences();
-            initDataBinding();
-            setupListMovieView(movieActivityBinding.rvListMovies);
-            setupObserver(movieViewModel);
-        }else{
-            //HANDLER WHERE
-        }
+        initialize(isConnected);
     }
+
+
 }

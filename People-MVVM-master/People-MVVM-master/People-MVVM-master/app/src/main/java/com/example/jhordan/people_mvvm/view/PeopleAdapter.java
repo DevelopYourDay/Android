@@ -23,8 +23,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.example.jhordan.people_mvvm.R;
-import com.example.jhordan.people_mvvm.databinding.
-        ItemPeopleBinding;
+import com.example.jhordan.people_mvvm.databinding.ItemPeopleBinding;
 import com.example.jhordan.people_mvvm.model.People;
 import com.example.jhordan.people_mvvm.viewmodel.ItemPeopleViewModel;
 

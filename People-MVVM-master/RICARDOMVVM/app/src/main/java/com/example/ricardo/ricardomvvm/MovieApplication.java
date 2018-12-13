@@ -62,6 +62,7 @@ public class MovieApplication extends MultiDexApplication {
 
     public void setConnectivityListener(ConnectivityReceiver.ConnectivityReceiverListener listener) {
         ConnectivityReceiver.connectivityReceiverListener = listener;
+        listener.onNetworkConnectionChanged(ConnectivityReceiver.isConnected());
     }
 
 }

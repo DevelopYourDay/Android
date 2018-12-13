@@ -9,14 +9,12 @@ public class Movie implements Serializable {
 
 
     @SerializedName("id")
-    @Expose
     private int id;
 
 
     @SerializedName("poster_path")
-    @Expose
-    private String urlImage;
 
+    private String urlImage;
 
     public Movie(int id, String urlImage) {
         this.id = id;
@@ -31,7 +29,6 @@ public class Movie implements Serializable {
         this.id = id;
     }
 
-
     public String getUrlImage() {
         return urlImage;
     }
@@ -39,5 +36,4 @@ public class Movie implements Serializable {
     public void setUrlImage(String urlImage) {
         this.urlImage = urlImage;
     }
-
 }
