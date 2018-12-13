@@ -39,7 +39,6 @@ public class PeopleActivity extends AppCompatActivity implements Observer {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
     initDataBinding();
     setSupportActionBar(peopleActivityBinding.toolbar);
     setupListPeopleView(peopleActivityBinding.listPeople);

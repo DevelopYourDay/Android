@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+
+    <data>
+
+        <variable
+            name="movieDetailViewModel"
+            type="com.example.ricardo.ricardomvvm.viewmodel.MovieDetailsViewModel" />
+
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".view.MovieDetailsActivity">
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar_movie_details"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:background="@color/primary"
+            android:elevation="6dp"
+            android:minHeight="?attr/actionBarSize"
+            app:titleTextColor="@color/primary_light"
+            app:title="@string/app_name" />
+
+        <TextView
+            android:id="@+id/tv_movie_title"
+            style="@style/movie_detail_title"
+            android:layout_width="0dp"
+            android:layout_height="150dp"
+            android:gravity="center|start"
+            android:paddingLeft="24dp"
+            android:paddingRight="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_movie_details"
+            android:text="@{movieDetailViewModel.title}"
+            tools:text="Chappie" />
+
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabLayout_movie_details"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:background="@color/primary"
+            android:elevation="6dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_movie_title"
+            app:tabSelectedTextColor="@color/primary_dark"
+            app:tabTextColor="@color/primary_light">
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem_movie_details_information"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Information" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem_movie_details_trailers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trailers" />
+
+            <android.support.design.widget.TabItem
+                android:id="@+id/tabItem_movie_details_reviews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reviews" />
+
+        </android.support.design.widget.TabLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/tabItem_movie_details_viewpager"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/tabLayout_movie_details"
+            app:layout_constraintTop_toBottomOf="@+id/tabLayout_movie_details" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

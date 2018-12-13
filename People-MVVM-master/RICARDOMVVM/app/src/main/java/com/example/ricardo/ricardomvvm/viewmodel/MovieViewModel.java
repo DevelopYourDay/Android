@@ -5,31 +5,24 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableInt;
-import android.provider.Settings;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.ricardo.ricardomvvm.MovieApplication;
 import com.example.ricardo.ricardomvvm.data.remote.MovieRepository;
-import com.example.ricardo.ricardomvvm.data.remote.MovieService;
 import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.GetPopularMovies;
 import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.GetTopRatedMovies;
 import com.example.ricardo.ricardomvvm.model.Movie;
-import com.example.ricardo.ricardomvvm.model.MoviesResponse;
 import com.example.ricardo.ricardomvvm.view.MovieActivity;
 import com.example.ricardo.ricardomvvm.view.notifications.Toasts;
-import com.example.ricardo.ricardomvvm.databinding.MovieMainBinding;
+import com.example.ricardo.ricardomvvm.databinding.ActivityMovieBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 import static com.example.ricardo.ricardomvvm.view.MovieActivity.PREFS_MOVIE_TYPE_KEY;
 import static com.example.ricardo.ricardomvvm.view.MovieActivity.PREFS_NAME_FILE;
@@ -59,7 +52,7 @@ public class MovieViewModel extends Observable {
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private MovieMainBinding movieActivityBinding;
+    private ActivityMovieBinding movieActivityBinding;
 
 
     public MovieViewModel(Context context) {

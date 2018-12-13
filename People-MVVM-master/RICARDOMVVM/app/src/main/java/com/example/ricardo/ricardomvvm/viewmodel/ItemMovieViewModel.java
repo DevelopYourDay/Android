@@ -8,6 +8,7 @@ import android.widget.ImageView;
 
 import com.example.ricardo.ricardomvvm.Utils.MovieUtils;
 import com.example.ricardo.ricardomvvm.model.Movie;
+import com.example.ricardo.ricardomvvm.view.MovieDetailsActivity;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -30,13 +31,9 @@ public class ItemMovieViewModel extends BaseObservable {
         return movie.getUrlImage();
     }
 
-    @BindingAdapter("imageUrl")
-    public static void setImageURl (ImageView imageView, String url){
-        Picasso.get().load(MovieUtils.getFullUrlImage(url)).into(imageView);
-    }
 
     public void onItemClick(View view) {
-        //context.startActivity(PeopleDetailActivity.launchDetail(view.getContext(), people));
+        context.startActivity(MovieDetailsActivity.launchDetail(view.getContext(), movie));
     }
 
     public void setMovie(Movie movie) {

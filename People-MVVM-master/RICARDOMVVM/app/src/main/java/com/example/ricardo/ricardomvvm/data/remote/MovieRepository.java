@@ -2,9 +2,10 @@ package com.example.ricardo.ricardomvvm.data.remote;
 
 import android.content.Context;
 
-import com.example.ricardo.ricardomvvm.MovieApplication;
-import com.example.ricardo.ricardomvvm.model.MoviesResponse;
+import com.example.ricardo.ricardomvvm.Utils.MovieApplication;
 import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.*;
+import com.example.ricardo.ricardomvvm.model.Movie;
+import com.example.ricardo.ricardomvvm.model.MovieDetail;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -28,8 +29,8 @@ public class MovieRepository {
         Disposable disposable = movieService.GetPopularMovies(API_KEY,LANGUAGE,page)
                 .subscribeOn(movieApplication.subscribeScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<MoviesResponse>() {
-                    @Override public void accept(MoviesResponse moviesResponse) {
+                .subscribe(new Consumer<Movie.MovieResponse>() {
+                    @Override public void accept(Movie.MovieResponse moviesResponse) {
                     callback.onSuccess(moviesResponse.page, moviesResponse.getMovies());
                     }
                 }, new Consumer<Throwable>() {
@@ -47,9 +48,30 @@ public class MovieRepository {
         Disposable disposable = movieService.GetTopRatedMovies(API_KEY,LANGUAGE,page)
                 .subscribeOn(movieApplication.subscribeScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<MoviesResponse>() {
-                    @Override public void accept(MoviesResponse moviesResponse) {
+                .subscribe(new Consumer<Movie.MovieResponse>() {
+                    @Override public void accept(Movie.MovieResponse moviesResponse) {
                         callback.onSuccess(moviesResponse.page, moviesResponse.getMovies());
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override public void accept(Throwable throwable) {
+                        callback.onError();
+                    }
+                });
+        compositeDisposable.add(disposable);
+    }
+
+
+    public static void getDetailsFromMovie(Context context, CompositeDisposable compositeDisposable, int movieId, final GetDetailsFromMovie callback) {
+
+        MovieApplication movieApplication = MovieApplication.create(context);
+        MovieService movieService = movieApplication.getMovieService();
+
+        Disposable disposable = movieService.GetDetailsFromMovie(movieId,API_KEY,LANGUAGE)
+                .subscribeOn(movieApplication.subscribeScheduler())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<MovieDetail>() {
+                    @Override public void accept( MovieDetail movieDetail) {
+                        callback.onSuccess(movieDetail);
                     }
                 }, new Consumer<Throwable>() {
                     @Override public void accept(Throwable throwable) {

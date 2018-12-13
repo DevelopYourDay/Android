@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\People-MVVM-master\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\people_activity.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\People-MVVM-master\\app\\src\\main\\res\\layout\\people_activity.xml"
+    },
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\People-MVVM-master\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\people_detail_activity.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\People-MVVM-master\\app\\src\\main\\res\\layout\\people_detail_activity.xml"
+    },
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\People-MVVM-master\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\item_people.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\People-MVVM-master\\app\\src\\main\\res\\layout\\item_people.xml"
+    }
+]

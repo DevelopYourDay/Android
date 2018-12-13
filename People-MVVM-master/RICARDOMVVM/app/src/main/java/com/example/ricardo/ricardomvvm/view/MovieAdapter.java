@@ -9,13 +9,15 @@ import android.view.ViewGroup;
 import com.example.ricardo.ricardomvvm.Utils.MovieUtils;
 import com.example.ricardo.ricardomvvm.R;
 import com.example.ricardo.ricardomvvm.model.Movie;
-import com.example.ricardo.ricardomvvm.databinding.MovieListItemBinding;
+import com.example.ricardo.ricardomvvm.databinding.ActivityMovieBinding;
+import com.example.ricardo.ricardomvvm.databinding.ItemMovieBinding;
+import com.example.ricardo.ricardomvvm.viewmodel.ItemMovieViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapterViewHolder> {
+public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     public interface MoviesAdapterOnClickHandler {
         void onClick(int id);
@@ -30,8 +32,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapterViewHolder> {
 
     @NonNull
     @Override public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        MovieListItemBinding itemMovieBinding =
-                DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.movie_list_item,
+        ItemMovieBinding itemMovieBinding =
+                DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_movie,
                         parent, false);
         return new MovieAdapterViewHolder(itemMovieBinding);
     }
@@ -90,6 +92,32 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapterViewHolder> {
         notifyDataSetChanged();
     }
 
+
+    /**
+     *  ViewHolder MovieAdapter
+     *
+     */
+
+    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
+
+        ItemMovieBinding mItemMovieBinding;
+
+
+        public MovieAdapterViewHolder( ItemMovieBinding itemMovieBinding) {
+            super(itemMovieBinding.getRoot());
+            mItemMovieBinding = itemMovieBinding;
+        }
+
+
+        void bindMovie(Movie movie) {
+            if (mItemMovieBinding.getMovieItemViewModel() == null) {
+                mItemMovieBinding.setMovieItemViewModel(
+                        new ItemMovieViewModel(movie, itemView.getContext()));
+            } else {
+                mItemMovieBinding.getMovieItemViewModel().setMovie(movie);
+            }
+        }
+    }
 
 
 

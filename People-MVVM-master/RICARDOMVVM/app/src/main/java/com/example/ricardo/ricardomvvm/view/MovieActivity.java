@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -13,18 +12,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.example.ricardo.ricardomvvm.ConnectivityReceiver;
-import com.example.ricardo.ricardomvvm.MovieApplication;
+import com.example.ricardo.ricardomvvm.Utils.ConnectivityReceiver;
+import com.example.ricardo.ricardomvvm.Utils.MovieApplication;
 import com.example.ricardo.ricardomvvm.R;
 import com.example.ricardo.ricardomvvm.data.remote.MoviesFactory;
-import com.example.ricardo.ricardomvvm.databinding.MovieMainBinding;
+import com.example.ricardo.ricardomvvm.databinding.ActivityMovieBinding;
 import com.example.ricardo.ricardomvvm.viewmodel.MovieViewModel;
 
 import java.util.Observable;
 import java.util.Observer;
 
 public class MovieActivity extends AppCompatActivity implements Observer, ConnectivityReceiver.ConnectivityReceiverListener {
-    private MovieMainBinding movieActivityBinding;
+    private ActivityMovieBinding movieActivityBinding;
     private MovieViewModel movieViewModel;
 
 
@@ -39,7 +38,7 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.movie_main);
+        setContentView(R.layout.activity_movie);
         //initialize();
     }
 
@@ -52,7 +51,7 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
             setupListMovieView(movieActivityBinding.rvListMovies);
             setupObserver(movieViewModel);
         }else{
-            setContentView(R.layout.toast_no_internet_connection);
+            setContentView(R.layout.partial_no_internet_connection);
         }
 
     }
@@ -78,7 +77,7 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
     }
 
     private void initDataBinding() {
-        movieActivityBinding = DataBindingUtil.setContentView(this, R.layout.movie_main);
+        movieActivityBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie);
         movieViewModel = new MovieViewModel(this);
         movieActivityBinding.setMovieViewModel(movieViewModel);
     }
@@ -140,9 +139,7 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
         sortMenu.show();
     }
 
-    private void startActivityActionView() {
-        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(MoviesFactory.TMDB_BASE_URL)));
-    }
+
 
     @Override public void update(Observable observable, Object data) {
         if (observable instanceof MovieViewModel) {
@@ -156,6 +153,5 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
     public void onNetworkConnectionChanged(boolean isConnected) {
         initialize(isConnected);
     }
-
 
 }

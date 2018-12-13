@@ -17,7 +17,7 @@ public class Toasts extends AppCompatActivity {
 
     public static Toast createToastNoInternetConnection(Context context){
         LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        View layout = inflater.inflate(R.layout.toast_no_internet_connection, null);
+        View layout = inflater.inflate(R.layout.partial_no_internet_connection, null);
         TextView text = (TextView) layout.findViewById(R.id.tv_no_internet_connection);
         text.setText(R.string.erro_no_internet_connection);
         Toast toast = new Toast(context);

@@ -25,7 +25,7 @@
           app:contentScrim="?attr/colorPrimary"
           app:expandedTitleGravity="center"
           app:expandedTitleMarginBottom="@dimen/spacing_large"
-          app:expandedTitleMarginEnd="64dp"
+          app:expandedTitlimageUrleMarginEnd="64dp"
           app:expandedTitleMarginStart="48dp"
           app:expandedTitleTextAppearance="@style/CollapsingTextAppearance.TitleSize"
           app:layout_scrollFlags="scroll|exitUntilCollapsed"
