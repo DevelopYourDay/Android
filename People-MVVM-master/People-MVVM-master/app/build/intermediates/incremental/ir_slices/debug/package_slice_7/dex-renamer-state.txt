@@ -1,4 +1,0 @@
-#Tue Dec 11 17:16:06 GMT 2018
-base.0=C\:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\People-MVVM-master\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\7
-path.0=classes.dex
-renamed.0=classes.dex

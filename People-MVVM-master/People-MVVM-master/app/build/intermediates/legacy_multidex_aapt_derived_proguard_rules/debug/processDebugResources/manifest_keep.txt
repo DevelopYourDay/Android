@@ -1,2 +1,0 @@
-# Referenced at C:\Users\E5813\Documents\Github\Android\People-MVVM-master\People-MVVM-master\app\build\intermediates\merged_manifests\debug\processDebugManifest\merged\AndroidManifest.xml:13
--keep class com.example.jhordan.people_mvvm.PeopleApplication { <init>(...); }
