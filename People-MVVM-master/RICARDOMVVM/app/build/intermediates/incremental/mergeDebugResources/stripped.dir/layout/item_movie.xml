@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+        
+
+    
+
+                 
+                                     
+                                                                                 
+           
+
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" android:tag="layout/item_movie_0">
+
+    <ImageView
+        android:id="@+id/img_cover_movie"
+        android:layout_width="206dp"
+        android:layout_height="300dp"
+        android:contentDescription="@string/content_description_cover_movie"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="fitXY"
+        tools:src="@mipmap/ic_launcher"
+        android:tag="binding_1"                             />
+
+</android.support.constraint.ConstraintLayout>
+
+         

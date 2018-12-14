@@ -8,7 +8,7 @@ public class MovieDetail {
     private int id;
 
     @SerializedName("title")
-    private String title;
+    public String title;
 
     @SerializedName("release_date")
     private String year;

@@ -35,9 +35,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         setSupportActionBar(activityMovieDetailsBinding.toolbarMovieDetails);
         displayHomeAsUpEnabled();
         tabLayout = (TabLayout) findViewById(R.id.tabLayout_movie_details);
-
         initializeViewPage();
-
     }
 
 
@@ -48,20 +46,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
         activityMovieDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
         activityMovieDetailsBinding.setMovieDetailViewModel(movieDetailModel);
         activityMovieDetailsBinding.setLifecycleOwner(this);
-
-        movieDetailModel.getMovieDetailLiveData().observe(this, new Observer<MovieDetail>() {
-            @Override
-            public void onChanged(@Nullable MovieDetail movieDetail) {
-                activityMovieDetailsBinding.tvMovieTitle.setText(movieDetail.getTitle());
-            }
-
-        });
-
-
-       /** activityMovieDetailsBinding.tvMovieTitle = movieDetailModel;
-        MovieDetailsViewModel movieDetailsViewModel =  new MovieDetailsViewModel(movie, this);
-        activityMovieDetailsBinding.setMovieDetailViewModel(movieDetailsViewModel);
-        //setTitle(activityMovieDetailsBinding.getMovieDetailViewModel().movieDetail.getTitle());**/
     }
 
     private void displayHomeAsUpEnabled() {
@@ -84,7 +68,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
     public void initializeViewPage(){
         viewPager = (ViewPager) findViewById(R.id.tabItem_movie_details_viewpager);
-        final MovieDetailsViewPagerAdapter adapter = new MovieDetailsViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        MovieDetailsViewPagerAdapter adapter = new MovieDetailsViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {

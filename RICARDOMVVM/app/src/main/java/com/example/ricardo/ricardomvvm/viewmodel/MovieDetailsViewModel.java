@@ -1,6 +1,8 @@
 package com.example.ricardo.ricardomvvm.viewmodel;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.databinding.BindingAdapter;
@@ -17,37 +19,25 @@ import com.squareup.picasso.Picasso;
 
 public class MovieDetailsViewModel extends ViewModel {
 
-    private MutableLiveData<MovieDetail> movieDetail;
-    public MutableLiveData<String> title = new MutableLiveData<>();
+    private MutableLiveData<MovieDetail> currentMovieDetails = new MutableLiveData<>();
     private Movie movie;
-    Context context ;
-
+    private Context context;
 
     public MovieDetailsViewModel(Movie movie, Context context) {
-         this.context = context;
-         this.movie = movie;
+        this.movie = movie;
+        this.context = context;
+        fetchDetailMovie(movie);
     }
 
-    public MutableLiveData<MovieDetail> getMovieDetailLiveData(){
-        if(movieDetail == null){
-            movieDetail =  new MutableLiveData<>();
-           fetchDetailMovie(this.movie);
-        }
-        return movieDetail;
+    public final LiveData<MovieDetail>getMovieDetail(){
+        return currentMovieDetails;
     }
 
-
-
-
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-    }
-
-    @BindingAdapter({"imageUrl"})
-    public void loadImage(ImageView view, String imageUrl) {
-        Picasso.get().load(MovieUtils.getFullUrlImage(imageUrl)).into(view);
+    public final LiveData<String>getTitle(){
+        LiveData<String> title = Transformations.map(currentMovieDetails, movie -> {
+            return movie.getTitle();
+        });
+        return title;
     }
 
 
@@ -56,10 +46,8 @@ public class MovieDetailsViewModel extends ViewModel {
         MovieRepository.getDetailsFromMovie(context, movie.getId(), new GetDetailsFromMovie() {
             @Override
             public void onSuccess(MovieDetail movieDetail) {
-                MovieDetailsViewModel.this.movieDetail.postValue(movieDetail);
-                MovieDetailsViewModel.this.title.postValue(movieDetail.getTitle());
+                currentMovieDetails.setValue(movieDetail);
             }
-
             @Override
             public void onError() {
                 Toast toast = Toasts.createToastNoInternetConnection(context);
@@ -67,5 +55,6 @@ public class MovieDetailsViewModel extends ViewModel {
             }
         });
     }
+
 
 }

@@ -1,0 +1,4 @@
+#Thu Dec 13 18:14:54 GMT 2018
+base.0=C\:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\5
+path.0=classes.dex
+renamed.0=classes.dex

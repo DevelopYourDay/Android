@@ -1,0 +1,26 @@
+[
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\fragment_movie_details_trailer.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\src\\main\\res\\layout\\fragment_movie_details_trailer.xml"
+    },
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\activity_movie_details.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\src\\main\\res\\layout\\activity_movie_details.xml"
+    },
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\activity_movie.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\src\\main\\res\\layout\\activity_movie.xml"
+    },
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\fragment_movie_details_information.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\src\\main\\res\\layout\\fragment_movie_details_information.xml"
+    },
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\item_movie.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\src\\main\\res\\layout\\item_movie.xml"
+    },
+    {
+        "merged": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\fragment_movie_details_review.xml",
+        "source": "C:\\Users\\E5813\\Documents\\Github\\Android\\People-MVVM-master\\RICARDOMVVM\\app\\src\\main\\res\\layout\\fragment_movie_details_review.xml"
+    }
+]
