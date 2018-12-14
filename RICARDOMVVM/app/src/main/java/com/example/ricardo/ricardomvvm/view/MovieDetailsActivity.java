@@ -1,22 +1,23 @@
 package com.example.ricardo.ricardomvvm.view;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import com.example.ricardo.ricardomvvm.R;
 import com.example.ricardo.ricardomvvm.databinding.ActivityMovieDetailsBinding;
 import com.example.ricardo.ricardomvvm.model.Movie;
+import com.example.ricardo.ricardomvvm.model.MovieDetail;
+import com.example.ricardo.ricardomvvm.view.adapter.MovieDetailsViewPagerAdapter;
 import com.example.ricardo.ricardomvvm.viewmodel.MovieDetailsViewModel;
-
-import java.util.Observable;
-import java.util.Observer;
 
 public class MovieDetailsActivity extends AppCompatActivity {
     private ViewPager viewPager;
@@ -29,13 +30,56 @@ public class MovieDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activityMovieDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
+        Movie movie =  getExtrasFromIntent();
+        initializeViewModel(movie);
         setSupportActionBar(activityMovieDetailsBinding.toolbarMovieDetails);
         displayHomeAsUpEnabled();
         tabLayout = (TabLayout) findViewById(R.id.tabLayout_movie_details);
-        Movie movie =  getExtrasFromIntent();
-        initializeViewModel(movie);
+
         initializeViewPage();
+
+    }
+
+
+
+    private void initializeViewModel(Movie movie){
+
+        MovieDetailsViewModel movieDetailModel = new MovieDetailsViewModel( movie,this);
+        activityMovieDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
+        activityMovieDetailsBinding.setMovieDetailViewModel(movieDetailModel);
+        activityMovieDetailsBinding.setLifecycleOwner(this);
+
+        movieDetailModel.getMovieDetailLiveData().observe(this, new Observer<MovieDetail>() {
+            @Override
+            public void onChanged(@Nullable MovieDetail movieDetail) {
+                activityMovieDetailsBinding.tvMovieTitle.setText(movieDetail.getTitle());
+            }
+
+        });
+
+
+       /** activityMovieDetailsBinding.tvMovieTitle = movieDetailModel;
+        MovieDetailsViewModel movieDetailsViewModel =  new MovieDetailsViewModel(movie, this);
+        activityMovieDetailsBinding.setMovieDetailViewModel(movieDetailsViewModel);
+        //setTitle(activityMovieDetailsBinding.getMovieDetailViewModel().movieDetail.getTitle());**/
+    }
+
+    private void displayHomeAsUpEnabled() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    private Movie getExtrasFromIntent() {
+        Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
+        return movie;
+    }
+
+    public static Intent launchDetail(Context context, Movie people) {
+        Intent intent = new Intent(context, MovieDetailsActivity.class);
+        intent.putExtra(EXTRA_MOVIE, people);
+        return intent;
     }
 
     public void initializeViewPage(){
@@ -59,34 +103,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-
-
-    private void initializeViewModel(Movie movie){
-        MovieDetailsViewModel movieDetailsViewModel =  new MovieDetailsViewModel(movie, this);
-        activityMovieDetailsBinding.setMovieDetailViewModel(movieDetailsViewModel);
-        //setTitle(activityMovieDetailsBinding.getMovieDetailViewModel().movieDetail.getTitle());
-    }
-
-    private void displayHomeAsUpEnabled() {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
-
-
-    private Movie getExtrasFromIntent() {
-        Movie movie = (Movie) getIntent().getSerializableExtra(EXTRA_MOVIE);
-        return movie;
-    }
-
-    public static Intent launchDetail(Context context, Movie people) {
-        Intent intent = new Intent(context, MovieDetailsActivity.class);
-        intent.putExtra(EXTRA_MOVIE, people);
-        return intent;
     }
 
 }

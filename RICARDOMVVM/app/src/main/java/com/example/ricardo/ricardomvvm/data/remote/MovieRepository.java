@@ -61,7 +61,7 @@ public class MovieRepository {
     }
 
 
-    public static void getDetailsFromMovie(Context context, CompositeDisposable compositeDisposable, int movieId, final GetDetailsFromMovie callback) {
+    public static void getDetailsFromMovie(Context context , int movieId, final GetDetailsFromMovie callback) {
 
         MovieApplication movieApplication = MovieApplication.create(context);
         MovieService movieService = movieApplication.getMovieService();
@@ -78,6 +78,5 @@ public class MovieRepository {
                         callback.onError();
                     }
                 });
-        compositeDisposable.add(disposable);
     }
 }

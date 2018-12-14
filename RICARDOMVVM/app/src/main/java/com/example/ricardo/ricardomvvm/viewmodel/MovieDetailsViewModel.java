@@ -1,10 +1,9 @@
 package com.example.ricardo.ricardomvvm.viewmodel;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.databinding.BindingAdapter;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -14,46 +13,36 @@ import com.example.ricardo.ricardomvvm.data.remote.interfacesMoviesServices.GetD
 import com.example.ricardo.ricardomvvm.model.Movie;
 import com.example.ricardo.ricardomvvm.model.MovieDetail;
 import com.example.ricardo.ricardomvvm.view.notifications.Toasts;
-import com.example.ricardo.ricardomvvm.databinding.ActivityMovieDetailsBinding;
 import com.squareup.picasso.Picasso;
 
+public class MovieDetailsViewModel extends ViewModel {
 
-import io.reactivex.disposables.CompositeDisposable;
-
-public class MovieDetailsViewModel {
-
+    private MutableLiveData<MovieDetail> movieDetail;
+    public MutableLiveData<String> title = new MutableLiveData<>();
     private Movie movie;
-    public MutableLiveData<MovieDetail> movieDetail;
-    private Context context;
-    ActivityMovieDetailsBinding activityMovieDetailsBinding;
+    Context context ;
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public MovieDetailsViewModel(Movie movie, Context context) {
-        this.movie = movie;
-        this.context = context;
-        movieDetail =  new MutableLiveData<>();
-        fetchDetailMovie(movie);
+         this.context = context;
+         this.movie = movie;
     }
 
-    public String getTitle(){
-        if(this.movieDetail == null){
-            this.movieDetail = new MutableLiveData<>();
-            return movieDetail.getValue().getTitle();
-        }else{
-            return this.movieDetail.getValue().getTitle();
+    public MutableLiveData<MovieDetail> getMovieDetailLiveData(){
+        if(movieDetail == null){
+            movieDetail =  new MutableLiveData<>();
+           fetchDetailMovie(this.movie);
         }
-
+        return movieDetail;
     }
 
-    public MovieDetail getMovieDetails(){
-        if(this.movieDetail == null){
-            this.movieDetail = new MutableLiveData<>();
-            return movieDetail.getValue();
-        }else{
-            return this.movieDetail.getValue();
-        }
 
+
+
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
     }
 
     @BindingAdapter({"imageUrl"})
@@ -62,23 +51,21 @@ public class MovieDetailsViewModel {
     }
 
 
-    private void fetchDetailMovie(Movie movie) {
+    public void fetchDetailMovie(final Movie movie) {
 
-        MovieRepository.getDetailsFromMovie(context, compositeDisposable, movie.getId(), new GetDetailsFromMovie() {
+        MovieRepository.getDetailsFromMovie(context, movie.getId(), new GetDetailsFromMovie() {
             @Override
             public void onSuccess(MovieDetail movieDetail) {
-                setMovieDetails(movieDetail);
+                MovieDetailsViewModel.this.movieDetail.postValue(movieDetail);
+                MovieDetailsViewModel.this.title.postValue(movieDetail.getTitle());
             }
+
             @Override
             public void onError() {
                 Toast toast = Toasts.createToastNoInternetConnection(context);
                 toast.show();
             }
         });
-    }
-
-    private void setMovieDetails(MovieDetail movieDetails){
-        this.movieDetail.postValue(movieDetails);
     }
 
 }

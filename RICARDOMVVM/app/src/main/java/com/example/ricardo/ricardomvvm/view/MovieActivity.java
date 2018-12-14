@@ -1,9 +1,7 @@
 package com.example.ricardo.ricardomvvm.view;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,8 +13,8 @@ import android.view.MenuItem;
 import com.example.ricardo.ricardomvvm.Utils.ConnectivityReceiver;
 import com.example.ricardo.ricardomvvm.Utils.MovieApplication;
 import com.example.ricardo.ricardomvvm.R;
-import com.example.ricardo.ricardomvvm.data.remote.MoviesFactory;
 import com.example.ricardo.ricardomvvm.databinding.ActivityMovieBinding;
+import com.example.ricardo.ricardomvvm.view.adapter.MovieAdapter;
 import com.example.ricardo.ricardomvvm.viewmodel.MovieViewModel;
 
 import java.util.Observable;

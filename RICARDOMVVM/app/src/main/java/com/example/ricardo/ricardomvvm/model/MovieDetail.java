@@ -36,6 +36,17 @@ public class MovieDetail {
         this.utlImage = utlImage;
     }
 
+    public MovieDetail() {
+        this.id = 1;
+        this.title = "";
+        this.year = "";
+        this.duration = "";
+        this.rating = "";
+        this.description = "";
+        this.utlImage = "";
+
+    }
+
     public int getId() {
         return id;
     }

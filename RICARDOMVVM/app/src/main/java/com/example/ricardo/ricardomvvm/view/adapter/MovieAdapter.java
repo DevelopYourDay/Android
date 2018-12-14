@@ -1,4 +1,4 @@
-package com.example.ricardo.ricardomvvm.view;
+package com.example.ricardo.ricardomvvm.view.adapter;
 
 import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import com.example.ricardo.ricardomvvm.Utils.MovieUtils;
 import com.example.ricardo.ricardomvvm.R;
 import com.example.ricardo.ricardomvvm.model.Movie;
-import com.example.ricardo.ricardomvvm.databinding.ActivityMovieBinding;
 import com.example.ricardo.ricardomvvm.databinding.ItemMovieBinding;
 import com.example.ricardo.ricardomvvm.viewmodel.ItemMovieViewModel;
 import com.squareup.picasso.Picasso;

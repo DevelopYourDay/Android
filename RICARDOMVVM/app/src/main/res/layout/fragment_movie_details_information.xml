@@ -53,7 +53,6 @@
         android:layout_marginTop="16dp"
         android:contentDescription="@string/content_description_cover_movie"
         android:scaleType="fitXY"
-        app:imageUrl="@{movieDetailsViewModel.movieDetails.utlImage}"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/ic_launcher" />
@@ -66,8 +65,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="@+id/guideline3"
         app:layout_constraintTop_toTopOf="@+id/img_details_movie_cover"
-        tools:text="2015"
-        android:text="@{movieDetailsViewModel.movieDetails.year}"/>
+        tools:text="2015" />
 
     <TextView
         android:id="@+id/tv_movie_duration"
@@ -76,8 +74,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@+id/tv_movie_year"
         app:layout_constraintTop_toBottomOf="@+id/tv_movie_year"
-        tools:text="120min"
-        android:text="@{movieDetailsViewModel.movieDetails.duration}"/>
+        tools:text="120min" />
 
     <TextView
         android:id="@+id/tv_movie_rating"
@@ -87,8 +84,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="@+id/tv_movie_duration"
         app:layout_constraintTop_toBottomOf="@+id/tv_movie_duration"
-        tools:text="8.1/10"
-        android:text="@{movieDetailsViewModel.movieDetails.rating}"/>
+        tools:text="8.1/10" />
 
     <ImageView
         android:id="@+id/img_details_movie_mark_favorite"
@@ -113,8 +109,7 @@
         app:layout_constraintTop_toBottomOf="@+id/img_details_movie_cover"
         tools:text="n the near future, a mechanized police force patrols the streets and deals with lawbreakers --
         but now, the people are fighting back. When one police droid is stolen and given new
-        programming, he acquires the ability to feel and think for himself. While the robot, dubbed "
-        android:text="@{movieDetailsViewModel.movieDetails.description}"/>
+        programming, he acquires the ability to feel and think for himself. While the robot, dubbed " />
 
 </android.support.constraint.ConstraintLayout>
 
