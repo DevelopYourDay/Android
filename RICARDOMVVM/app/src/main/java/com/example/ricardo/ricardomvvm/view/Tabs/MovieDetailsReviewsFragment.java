@@ -20,7 +20,6 @@ public class MovieDetailsReviewsFragment extends Fragment {
     public static MovieDetailsReviewsFragment newInstance() {
         
         Bundle args = new Bundle();
-        
         MovieDetailsReviewsFragment fragment = new MovieDetailsReviewsFragment();
         fragment.setArguments(args);
         return fragment;

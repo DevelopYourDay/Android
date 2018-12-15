@@ -26,12 +26,6 @@ public class MovieApplication extends MultiDexApplication {
         return MovieApplication.get(context);
     }
 
-    public MovieService getMovieService() {
-        if (movieService == null) {
-            movieService = MoviesFactory.create();
-        }
-        return movieService;
-    }
 
     public Scheduler subscribeScheduler() {
         if (scheduler == null) {

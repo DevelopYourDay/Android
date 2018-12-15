@@ -1,7 +1,6 @@
 package com.example.ricardo.ricardomvvm.view;
 
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -9,43 +8,67 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 import com.example.ricardo.ricardomvvm.R;
 import com.example.ricardo.ricardomvvm.databinding.ActivityMovieDetailsBinding;
+import com.example.ricardo.ricardomvvm.databinding.FragmentMovieDetailsInformationBinding;
 import com.example.ricardo.ricardomvvm.model.Movie;
-import com.example.ricardo.ricardomvvm.model.MovieDetail;
+import com.example.ricardo.ricardomvvm.view.adapter.MovieAdapter;
 import com.example.ricardo.ricardomvvm.view.adapter.MovieDetailsViewPagerAdapter;
+import com.example.ricardo.ricardomvvm.view.notifications.Toasts;
 import com.example.ricardo.ricardomvvm.viewmodel.MovieDetailsViewModel;
 
 public class MovieDetailsActivity extends AppCompatActivity {
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
-
     private static final String EXTRA_MOVIE = "EXTRA_MOVIE";
-
     private ActivityMovieDetailsBinding activityMovieDetailsBinding;
+    private FragmentMovieDetailsInformationBinding fragmentMovieDetailsInformationBinding;
+    public static  MovieDetailsViewModel movieDetailModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Movie movie =  getExtrasFromIntent();
-        initializeViewModel(movie);
+        initializeViewModel();
+        initializeViewPage();
+        initializeObservers();
         setSupportActionBar(activityMovieDetailsBinding.toolbarMovieDetails);
         displayHomeAsUpEnabled();
-        tabLayout = (TabLayout) findViewById(R.id.tabLayout_movie_details);
-        initializeViewPage();
+        initializeFetchData();
     }
 
-
-
-    private void initializeViewModel(Movie movie){
-
-        MovieDetailsViewModel movieDetailModel = new MovieDetailsViewModel( movie,this);
+    private void initializeViewModel(){
+        movieDetailModel = ViewModelProviders.of(this).get(MovieDetailsViewModel.class);
         activityMovieDetailsBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_details);
         activityMovieDetailsBinding.setMovieDetailViewModel(movieDetailModel);
         activityMovieDetailsBinding.setLifecycleOwner(this);
+    }
+
+    private void initializeFetchData(){
+        activityMovieDetailsBinding.getMovieDetailViewModel().setMovie(getExtrasFromIntent());
+        activityMovieDetailsBinding.getMovieDetailViewModel().fetchDetailMovie();
+        activityMovieDetailsBinding.getMovieDetailViewModel().fetchReviewsFromDetailMovie();
+        activityMovieDetailsBinding.getMovieDetailViewModel().fetchTrailersFromDetailMovie();
+    }
+
+    private void initializeAdapterReviewList(RecyclerView listMovie){
+        //MovieAdapter adapter = new MovieAdapter();
+        //listMovie.setAdapter(adapter);
+        //listMovie.setLayoutManager(new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false));
+    }
+
+    private void initializeObservers(){
+        activityMovieDetailsBinding.getMovieDetailViewModel().getnotifications().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if(aBoolean){
+                    Toast toast = Toasts.createToastNoInternetConnection(getApplicationContext());
+                    toast.show();
+                }
+            }
+        });
     }
 
     private void displayHomeAsUpEnabled() {
@@ -67,14 +90,13 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     public void initializeViewPage(){
-        viewPager = (ViewPager) findViewById(R.id.tabItem_movie_details_viewpager);
-        MovieDetailsViewPagerAdapter adapter = new MovieDetailsViewPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        MovieDetailsViewPagerAdapter adapter = new MovieDetailsViewPagerAdapter(this.getSupportFragmentManager(), activityMovieDetailsBinding.tabLayoutMovieDetails.getTabCount());
+        activityMovieDetailsBinding.tabItemMovieDetailsViewpager.setAdapter(adapter);
+        activityMovieDetailsBinding.tabItemMovieDetailsViewpager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(activityMovieDetailsBinding.tabLayoutMovieDetails));
+        activityMovieDetailsBinding.tabLayoutMovieDetails.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+                activityMovieDetailsBinding.tabItemMovieDetailsViewpager.setCurrentItem(tab.getPosition());
             }
 
             @Override

@@ -22,7 +22,6 @@ public class MovieDetailsViewPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                // pass movie
                 MovieDetailsInformationFragment  movieDetailsInformationFragment = MovieDetailsInformationFragment.newInstance();
                 return movieDetailsInformationFragment;
             case 1:
@@ -42,4 +41,6 @@ public class MovieDetailsViewPagerAdapter extends FragmentStatePagerAdapter {
     public int getCount() {
         return this.numberOfTabs;
     }
+
+
 }

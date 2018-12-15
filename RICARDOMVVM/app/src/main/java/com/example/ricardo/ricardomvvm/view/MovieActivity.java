@@ -2,6 +2,7 @@ package com.example.ricardo.ricardomvvm.view;
 
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +15,9 @@ import com.example.ricardo.ricardomvvm.Utils.ConnectivityReceiver;
 import com.example.ricardo.ricardomvvm.Utils.MovieApplication;
 import com.example.ricardo.ricardomvvm.R;
 import com.example.ricardo.ricardomvvm.databinding.ActivityMovieBinding;
+import com.example.ricardo.ricardomvvm.databinding.ItemMovieBinding;
+import com.example.ricardo.ricardomvvm.databinding.ItemMovieBindingImpl;
+import com.example.ricardo.ricardomvvm.model.Movie;
 import com.example.ricardo.ricardomvvm.view.adapter.MovieAdapter;
 import com.example.ricardo.ricardomvvm.viewmodel.MovieViewModel;
 
@@ -22,6 +26,7 @@ import java.util.Observer;
 
 public class MovieActivity extends AppCompatActivity implements Observer, ConnectivityReceiver.ConnectivityReceiverListener {
     private ActivityMovieBinding movieActivityBinding;
+    private ItemMovieBinding itemMovieBinding;
     private MovieViewModel movieViewModel;
 
 
@@ -146,6 +151,8 @@ public class MovieActivity extends AppCompatActivity implements Observer, Connec
             movieAdapter.update(movieViewModel.getMovieList());
         }
     }
+
+ 
 
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {

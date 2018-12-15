@@ -6,7 +6,7 @@
 
         <variable
             name="movieDetailInformationViewModel"
-            type="com.example.ricardo.ricardomvvm.viewmodel.MovieDetailInformationViewModel" />
+            type="com.example.ricardo.ricardomvvm.viewmodel.MovieDetailsViewModel" />
 
     </data>
 
@@ -47,12 +47,14 @@
 
         <ImageView
             android:id="@+id/img_details_movie_cover"
-            android:layout_width="150dp"
-            android:layout_height="226dp"
+            android:layout_width="194dp"
+            android:layout_height="263dp"
             android:layout_marginStart="28dp"
             android:layout_marginTop="16dp"
             android:contentDescription="@string/content_description_cover_movie"
             android:scaleType="fitXY"
+            app:imageUrl="@{movieDetailInformationViewModel.url}"
+            android:background="@drawable/shape_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@mipmap/ic_launcher" />
@@ -62,9 +64,10 @@
             style="@style/movie_detail_year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:text="@{movieDetailInformationViewModel.year}"
-            app:layout_constraintStart_toStartOf="@+id/guideline3"
+            app:layout_constraintStart_toEndOf="@+id/img_details_movie_cover"
             app:layout_constraintTop_toTopOf="@+id/img_details_movie_cover"
             tools:text="2015" />
 
@@ -75,6 +78,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@+id/tv_movie_year"
             app:layout_constraintTop_toBottomOf="@+id/tv_movie_year"
+            android:text="@{movieDetailInformationViewModel.duration}"
             tools:text="120min" />
 
         <TextView
@@ -83,6 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:text="@{movieDetailInformationViewModel.rating}"
             app:layout_constraintStart_toStartOf="@+id/tv_movie_duration"
             app:layout_constraintTop_toBottomOf="@+id/tv_movie_duration"
             tools:text="8.1/10" />
@@ -105,6 +110,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
+            android:text="@{movieDetailInformationViewModel.description}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/img_details_movie_cover"

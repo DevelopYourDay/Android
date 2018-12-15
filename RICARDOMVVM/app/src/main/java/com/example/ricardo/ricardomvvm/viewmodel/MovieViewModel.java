@@ -103,7 +103,7 @@ public class MovieViewModel extends Observable {
 
     private void fetchPopularMoviesList() {
         isFetchingMovies = true;
-        MovieRepository.getPopularMovies(context, compositeDisposable, currentPage, new GetPopularMovies() {
+        MovieRepository.getPopularMovies(compositeDisposable, currentPage, new GetPopularMovies() {
             @Override
             public void onSuccess(int page, List<Movie> movies) {
                 changeMovieDataSet(movies);
@@ -123,7 +123,7 @@ public class MovieViewModel extends Observable {
 
     private void fetchTopRatedMoviesList() {
         isFetchingMovies = true;
-        MovieRepository.getTopRatedMovies(context, compositeDisposable, currentPage, new GetTopRatedMovies() {
+        MovieRepository.getTopRatedMovies(compositeDisposable, currentPage, new GetTopRatedMovies() {
             @Override
             public void onSuccess(int page, List<Movie> movies) {
                 changeMovieDataSet(movies);

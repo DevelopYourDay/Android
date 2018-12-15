@@ -14,25 +14,12 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class MovieApplication extends MultiDexApplication {
     private MovieService movieService;
-    private Scheduler scheduler;
+    private static Scheduler scheduler;
     private static MovieApplication mInstance;
 
-    private static MovieApplication get(Context context) {
-        return (MovieApplication) context.getApplicationContext();
-    }
 
-    public static MovieApplication create(Context context) {
-        return MovieApplication.get(context);
-    }
 
-    public MovieService getMovieService() {
-        if (movieService == null) {
-            movieService = MoviesFactory.create();
-        }
-        return movieService;
-    }
-
-    public Scheduler subscribeScheduler() {
+    public static Scheduler subscribeScheduler() {
         if (scheduler == null) {
             scheduler = Schedulers.io();
         }
