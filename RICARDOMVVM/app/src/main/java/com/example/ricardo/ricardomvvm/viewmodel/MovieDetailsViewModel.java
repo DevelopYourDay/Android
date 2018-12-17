@@ -32,6 +32,10 @@ public class MovieDetailsViewModel extends ViewModel {
         return notificationNoInternet;
     }
 
+    public final LiveData<List<MovieReview>> getListMovieReview(){
+        return movieReviewResponse;
+    }
+
     public final LiveData<MovieDetail> getMovieDetail() {
         return currentMovieDetails;
     }

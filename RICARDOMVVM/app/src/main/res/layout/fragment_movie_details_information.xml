@@ -116,7 +116,8 @@
             app:layout_constraintTop_toBottomOf="@+id/img_details_movie_cover"
             tools:text="n the near future, a mechanized police force patrols the streets and deals with lawbreakers --
         but now, the people are fighting back. When one police droid is stolen and given new
-        programming, he acquires the ability to feel and think for himself. While the robot, dubbed " />
+        programming, he acquires the ability to feel and think for himself. While the robot, dubbed "
+            android:scrollbars = "vertical"/>
 
     </android.support.constraint.ConstraintLayout>
 

@@ -1,5 +1,9 @@
 package com.example.ricardo.ricardomvvm.viewmodel;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.Transformations;
+import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.BindingAdapter;
@@ -14,30 +18,49 @@ import com.squareup.picasso.Picasso;
 /**
  * Created by Ricardo on 10/12/2018
  */
-public class ItemMovieViewModel extends BaseObservable {
-    private Movie movie;
-    private Context context;
+public class ItemMovieViewModel extends ViewModel {
 
-    public ItemMovieViewModel(Movie movie, Context context) {
-        this.movie = movie;
-        this.context = context;
+
+    private final MutableLiveData<Movie> movieMutableLiveData = new MutableLiveData<>();
+
+
+    public ItemMovieViewModel() {
     }
 
-    public int getIdMovie(){
-        return movie.getId();
+    public final void setMovieMutableLiveData(Movie movie){
+        this.movieMutableLiveData.setValue(movie);
     }
 
-    public String getUrlImage(){
-        return movie.getUrlImage();
+    public final LiveData<Integer> getIdMovie(){
+        LiveData<Integer> idMovie = Transformations.map(movieMutableLiveData, movie -> {
+            return movie.getId();
+        });
+        return idMovie;
+    }
+
+    public final LiveData<Movie> getMovie(){
+        LiveData<Movie> movie = Transformations.map(movieMutableLiveData, moviee -> {
+            return moviee;
+        });
+        return movie;
+    }
+
+
+    public final LiveData<String> getUrl() {
+        LiveData<String> url = Transformations.map(movieMutableLiveData, movie -> {
+            return MovieUtils.getFullUrlImage(movie.getUrlImage());
+        });
+        return url;
+    }
+
+    @BindingAdapter({"imageUrls"})
+    public static void loadImage(ImageView view, String url) {
+        Picasso.get().load(url).into(view);
     }
 
 
     public void onItemClick(View view) {
-        context.startActivity(MovieDetailsActivity.launchDetail(view.getContext(), movie));
+        view.getContext().startActivity(MovieDetailsActivity.launchDetail(view.getContext(), movieMutableLiveData.getValue()));
     }
 
-    public void setMovie(Movie movie) {
-        this.movie = movie;
-        notifyChange();
-    }
 }

@@ -18,10 +18,8 @@ import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    public interface MoviesAdapterOnClickHandler {
-        void onClick(int id);
-    }
 
+    public ItemMovieBinding itemMovieBinding;
     private List<Movie> mMovieList;
 
     public MovieAdapter() {
@@ -31,7 +29,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @NonNull
     @Override public MovieAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemMovieBinding itemMovieBinding =
+         itemMovieBinding =
                 DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_movie,
                         parent, false);
         return new MovieAdapterViewHolder(itemMovieBinding);
@@ -44,7 +42,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      * @param position
      */
     @Override public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
-        holder.bindMovie(mMovieList.get(position));
+        holder.bindMovie(mMovieList.get( holder.getAdapterPosition()));
+        //Não consegui colocar a imagem atraves de databinding + livedata tal como fiz nos detalhes
+        //E NECESSARIO VER O QUE SE PASSA AQUI
         Picasso.get().load(MovieUtils.getFullUrlImage(mMovieList.get(position).getUrlImage())).into(holder.mItemMovieBinding.imgCoverMovie);
     }
 
@@ -72,25 +72,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
 
-    public void appendMovies(List<Movie> moviesToAppend) {
-        mMovieList.addAll(moviesToAppend);
-        notifyDataSetChanged();
-    }
-
     public void update(List<Movie> movies){
-        if(mMovieList.size() >0 ){
-            mMovieList.clear();
-        }
         mMovieList.addAll(movies);
         notifyDataSetChanged();
     }
 
-
     public void cleanMovies() {
         mMovieList.clear();
-        notifyDataSetChanged();
     }
-
 
     /**
      *  ViewHolder MovieAdapter
@@ -101,24 +90,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         ItemMovieBinding mItemMovieBinding;
 
-
         public MovieAdapterViewHolder( ItemMovieBinding itemMovieBinding) {
             super(itemMovieBinding.getRoot());
             mItemMovieBinding = itemMovieBinding;
         }
 
-
         void bindMovie(Movie movie) {
             if (mItemMovieBinding.getMovieItemViewModel() == null) {
                 mItemMovieBinding.setMovieItemViewModel(
-                        new ItemMovieViewModel(movie, itemView.getContext()));
+                        new ItemMovieViewModel());
+                mItemMovieBinding.getMovieItemViewModel().setMovieMutableLiveData(movie);
             } else {
-                mItemMovieBinding.getMovieItemViewModel().setMovie(movie);
+                mItemMovieBinding.getMovieItemViewModel().setMovieMutableLiveData(movie);
             }
         }
     }
-
-
 
 
 }

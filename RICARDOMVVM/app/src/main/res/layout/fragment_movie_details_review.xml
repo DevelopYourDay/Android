@@ -6,8 +6,8 @@
     <data>
 
         <variable
-            name="movieDetailsReview"
-            type="com.example.ricardo.ricardomvvm.viewmodel.ItemMovieDetailsReviewViewModel" />
+            name="viewModel"
+            type="com.example.ricardo.ricardomvvm.viewmodel.MovieDetailsViewModel" />
 
     </data>
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"

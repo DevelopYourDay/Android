@@ -30,6 +30,8 @@ public class MovieDetailsInformationFragment extends Fragment {
     }
 
 
+
+
     public static MovieDetailsInformationFragment newInstance() {
         Bundle args = new Bundle();
         MovieDetailsInformationFragment fragment = new MovieDetailsInformationFragment();

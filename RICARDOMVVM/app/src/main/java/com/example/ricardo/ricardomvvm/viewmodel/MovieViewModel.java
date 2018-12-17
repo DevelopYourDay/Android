@@ -1,5 +1,8 @@
 package com.example.ricardo.ricardomvvm.viewmodel;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -32,18 +35,18 @@ import static com.example.ricardo.ricardomvvm.view.MovieActivity.PREFS_SORT_MOVI
  * Created by Ricardo on 10/12/2018
  */
 
-public class MovieViewModel extends Observable {
+public class MovieViewModel extends ViewModel {
 
     private static final int DEFAULT_VALUE_FROM_PAGE_REQUEST = 1;
-    private static final boolean DEFAULT_VALUE_FROM_FETECHING_MOVIES_REQUEST = false;
 
-    public ObservableInt movieProgress;
-    public ObservableInt movieRecycler;
-    public ObservableInt viewNoInternetConnection;
-    public ObservableBoolean isLoading;
-    private List<Movie> movieList;
-    private Context context;
-    private Cursor mCursor;
+    private static String PredefinedTypeSearchMovie;
+
+    public ObservableInt movieProgress =new ObservableInt(View.VISIBLE);
+    public ObservableInt movieRecycler  = new ObservableInt(View.GONE);
+    public ObservableBoolean isLoading = new ObservableBoolean();
+    public MutableLiveData<Boolean> NoInternetConnection = new MutableLiveData<>();
+    private MutableLiveData<List<Movie>> movieList = new MutableLiveData<>();
+
 
 
     private boolean isFetchingMovies;
@@ -52,25 +55,10 @@ public class MovieViewModel extends Observable {
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-    private ActivityMovieBinding movieActivityBinding;
-
-
-    public MovieViewModel(Context context) {
-        this.movieProgress = new ObservableInt(View.VISIBLE);
-        this.movieRecycler = new ObservableInt(View.GONE);
-        this.isLoading = new ObservableBoolean();
-        this.viewNoInternetConnection = new ObservableInt(View.GONE);
-        this.movieList = new ArrayList<>();
-        this.context = context;
-        initializeAttributes();
-        initializeViews();
-        fetchData();
-
-    }
 
 
     public void fetchData() {
-        switch (getPredefinedTypeSearchMovie()) {
+        switch (PredefinedTypeSearchMovie) {
             case MovieActivity.MOVIES_POPULAR:
                 fetchPopularMoviesList();
                 break;
@@ -85,15 +73,14 @@ public class MovieViewModel extends Observable {
 
     public void onChangedTypeSearchMovie() {
         initializeAttributes();
+        initializeViews();
         fetchData();
     }
 
     public void initializeAttributes() {
         isFetchingMovies = false;
         currentPage = DEFAULT_VALUE_FROM_PAGE_REQUEST;
-        if (movieList.size() > 0) {
-            movieList.clear();
-        }
+        movieList.setValue(new ArrayList<>());
     }
 
     public void initializeViews() {
@@ -106,17 +93,15 @@ public class MovieViewModel extends Observable {
         MovieRepository.getPopularMovies(compositeDisposable, currentPage, new GetPopularMovies() {
             @Override
             public void onSuccess(int page, List<Movie> movies) {
-                changeMovieDataSet(movies);
+                movieList.setValue(movies);
                 currentPage = page;
                 isFetchingMovies = false;
                 movieProgress.set(View.GONE);
                 movieRecycler.set(View.VISIBLE);
             }
-
             @Override
             public void onError() {
-                Toast toast = Toasts.createToastNoInternetConnection(context);
-                toast.show();
+               NoInternetConnection.setValue(true);
             }
         });
     }
@@ -126,7 +111,7 @@ public class MovieViewModel extends Observable {
         MovieRepository.getTopRatedMovies(compositeDisposable, currentPage, new GetTopRatedMovies() {
             @Override
             public void onSuccess(int page, List<Movie> movies) {
-                changeMovieDataSet(movies);
+                movieList.setValue(movies);
                 currentPage = page;
                 isFetchingMovies = false;
                 movieProgress.set(View.GONE);
@@ -135,21 +120,11 @@ public class MovieViewModel extends Observable {
 
             @Override
             public void onError() {
-                Toast toast = Toasts.createToastNoInternetConnection(context);
-                toast.show();
+                NoInternetConnection.setValue(true);
             }
         });
     }
 
-    private void changeMovieDataSet(List<Movie> Movies) {
-        movieList.addAll(Movies);
-        setChanged();
-        notifyObservers();
-    }
-
-    public List<Movie> getMovieList() {
-        return movieList;
-    }
 
     private void unSubscribeFromObservable() {
         if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
@@ -160,7 +135,6 @@ public class MovieViewModel extends Observable {
     public void reset() {
         unSubscribeFromObservable();
         compositeDisposable = null;
-        context = null;
     }
 
     /**
@@ -178,7 +152,6 @@ public class MovieViewModel extends Observable {
             int totalItemCount = layoutManager.getItemCount();
             int visibleItemCount = layoutManager.getChildCount();
             int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
-
             if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
                 if (!isFetchingMovies) {
                     currentPage++;
@@ -188,11 +161,16 @@ public class MovieViewModel extends Observable {
         }
     }
 
-    private String getPredefinedTypeSearchMovie() {
-        SharedPreferences settings = context.getSharedPreferences(PREFS_NAME_FILE, 0);
-        String moviePref = settings.getString(PREFS_MOVIE_TYPE_KEY, PREFS_SORT_MOVIE_DEFAULT);
-        return moviePref;
+    public  LiveData<Boolean> getNoInternetConnection(){
+        return NoInternetConnection;
     }
 
+    public LiveData<List<Movie>> getMovieList() {
+        return movieList;
+    }
+
+    public void setPredefinedTypeSearchMovie(String newPredifineMovie){
+        this.PredefinedTypeSearchMovie = newPredifineMovie;
+    }
 
 }

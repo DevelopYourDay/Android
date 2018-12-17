@@ -11,16 +11,21 @@ import android.support.design.widget.TabLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 import com.example.ricardo.ricardomvvm.R;
 import com.example.ricardo.ricardomvvm.databinding.ActivityMovieDetailsBinding;
 import com.example.ricardo.ricardomvvm.databinding.FragmentMovieDetailsInformationBinding;
 import com.example.ricardo.ricardomvvm.model.Movie;
+import com.example.ricardo.ricardomvvm.model.MovieReview;
 import com.example.ricardo.ricardomvvm.view.adapter.MovieAdapter;
+import com.example.ricardo.ricardomvvm.view.adapter.MovieDetailsReviewAdapter;
 import com.example.ricardo.ricardomvvm.view.adapter.MovieDetailsViewPagerAdapter;
 import com.example.ricardo.ricardomvvm.view.notifications.Toasts;
 import com.example.ricardo.ricardomvvm.viewmodel.MovieDetailsViewModel;
+
+import java.util.List;
 
 public class MovieDetailsActivity extends AppCompatActivity {
     private static final String EXTRA_MOVIE = "EXTRA_MOVIE";
@@ -53,10 +58,11 @@ public class MovieDetailsActivity extends AppCompatActivity {
         activityMovieDetailsBinding.getMovieDetailViewModel().fetchTrailersFromDetailMovie();
     }
 
-    private void initializeAdapterReviewList(RecyclerView listMovie){
-        //MovieAdapter adapter = new MovieAdapter();
-        //listMovie.setAdapter(adapter);
-        //listMovie.setLayoutManager(new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false));
+
+    private void setupListTrailers(RecyclerView listMovie) {
+       // MovieDetailsReviewAdapter adapter = new MovieDetailsReviewAdapter();
+       // listMovie.setAdapter(adapter);
+        //listMovie.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
 
     private void initializeObservers(){
@@ -69,6 +75,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     private void displayHomeAsUpEnabled() {
